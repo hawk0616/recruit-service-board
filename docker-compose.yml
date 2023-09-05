@@ -23,6 +23,3 @@ services:
       - PMA_PASSWORD=password
     ports:
       - "7999:80"
-
-networks:
-  lesson:

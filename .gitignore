@@ -1,0 +1,24 @@
+# ビルド成果物
+*.exe
+*.exe~
+*.dll
+*.so
+*.out
+
+# 依存関係ディレクトリ
+vendor/
+
+# IDE/エディタ フォルダ
+.idea/
+
+# macOS ファイル
+.DS_Store
+
+# Goのビルドファイル
+go.sum
+go.mod
+
+# その他
+.env
+
+data/
