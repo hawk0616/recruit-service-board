@@ -1,6 +1,7 @@
 package usecase
 
 import (
+	"fmt"
 	"recruit-info-service/model"
 	"recruit-info-service/repository"
 )
@@ -19,11 +20,14 @@ func NewCompanyTechnologyUsecase(ctr repository.ICompanyTechnologyRepository) IC
 }
 
 func (ctu *CompanyTechnologyUsecase) CreateCompanyTechnology(companyTechnology model.CompanyTechnology) (model.CompanyTechnologyResponse, error) {
+	fmt.Println(&companyTechnology)
 	if err := ctu.ctr.CreateCompanyTechnology(&companyTechnology); err != nil {
 		return model.CompanyTechnologyResponse{}, err
 	}
 	resCompanyTechnology := model.CompanyTechnologyResponse{
 		ID: companyTechnology.ID,
+		CompanyID: companyTechnology.CompanyID,
+		TechnologyID: companyTechnology.TechnologyID,
 	}
 	return resCompanyTechnology, nil
 }
