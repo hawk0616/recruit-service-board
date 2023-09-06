@@ -15,6 +15,7 @@ func NewRouter(
 	cc controller.ICompanyController, 
 	tc controller.ITechnologyController,
 	ctc controller.ICompanyTechnologyController,
+	ttc controller.ITechnologyTagController,
 	)*echo.Echo {
 	e := echo.New()
 
@@ -70,6 +71,18 @@ func NewRouter(
 	t.POST("", tc.CreateTechnology)
 	t.PUT("/:technologyId", tc.UpdateTechnology)
 	t.DELETE("/:technologyId", tc.DeleteTechnology)
+
+	// TechnologyTag
+	tt := e.Group("/technology_tags")
+	tt.Use(echojwt.WithConfig(echojwt.Config{
+		SigningKey: []byte(os.Getenv("SECRET")),
+		TokenLookup: "cookie:token",
+	}))
+	tt.GET("", ttc.GetAllTechnologyTags)
+	tt.GET("/:technologyTagId", ttc.GetTechnologyTagById)
+	tt.POST("", ttc.CreateTechnologyTag)
+	tt.PUT("/:technologyTagId", ttc.UpdateTechnologyTag)
+	tt.DELETE("/:technologyTagId", ttc.DeleteTechnologyTag)	
 
 	return e
 }

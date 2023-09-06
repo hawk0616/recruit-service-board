@@ -22,21 +22,24 @@ func main() {
 	companyRepository := repository.NewCompanyRepository(db)
 	technologyRepository := repository.NewTechnologyRepository(db)
 	companyTechnologyRepository := repository.NewCompanyTechnologyRepository(db)
+	technologyTagRepository := repository.NewTechnologyTagRepository(db)
 
 	// usecase
 	userUsecase := usecase.NewUserUsecase(userRepository, userValidator)
 	companyUsecase := usecase.NewCompanyUsecase(companyRepository, companyValidator)
 	technologyUsecase := usecase.NewTechnologyUsecase(technologyRepository)
 	companyTechnologyUsecase := usecase.NewCompanyTechnologyUsecase(companyTechnologyRepository)
+	technologyTagUsecase := usecase.NewTechnologyTagUsecase(technologyTagRepository)
 
 	// controller
 	userController := controller.NewUserController(userUsecase)
 	companyController := controller.NewCompanyController(companyUsecase)
 	technologyController := controller.NewTechnologyController(technologyUsecase)
 	companyTechnologyController := controller.NewCompanyTechnologyController(companyTechnologyUsecase)
+	technologyTagController := controller.NewTechnologyTagController(technologyTagUsecase)
 
 	// router
-	e := router.NewRouter(userController, companyController, technologyController, companyTechnologyController)
+	e := router.NewRouter(userController, companyController, technologyController, companyTechnologyController, technologyTagController)
 
 	// start server
 	e.Logger.Fatal(e.Start(":8090"))
