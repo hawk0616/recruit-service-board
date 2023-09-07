@@ -50,7 +50,6 @@ func (ctc *CompanyTechnologyController) CreateCompanyTechnology(c echo.Context) 
 	return c.JSON(http.StatusOK, companyTechnologyRes)
 }
 
-
 func (ctc *CompanyTechnologyController) DeleteCompanyTechnology(c echo.Context) error {
 	temCompanyId := c.Param("companyId")
 	companyId, _ := strconv.Atoi(temCompanyId)
