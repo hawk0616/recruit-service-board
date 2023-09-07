@@ -6,8 +6,8 @@ import (
 )
 
 type ITechnologyTagUsecase interface {
-	GetAllTechnologyTags(userId uint) ([]model.TechnologyTagResponse, error)
-	GetTechnologyTagById(userId uint, technologyTagId uint) (model.TechnologyTagResponse, error)
+	GetAllTechnologyTags() ([]model.TechnologyTagResponse, error)
+	GetTechnologyTagById(technologyTagId uint) (model.TechnologyTagResponse, error)
 	CreateTechnologyTag(technologyTag model.TechnologyTag) (model.TechnologyTagResponse, error)
 	UpdateTechnologyTag(technologyTag model.TechnologyTag, userId uint, technologyTagId uint) (model.TechnologyTagResponse, error)
 	DeleteTechnologyTag(userId uint, technologyTagId uint) error
@@ -21,13 +21,13 @@ func NewTechnologyTagUsecase(ttr repository.ITechnologyTagRepository) ITechnolog
 	return &TechnologyTagUsecase{ttr}
 }
 
-func (ttu *TechnologyTagUsecase) GetAllTechnologyTags(userId uint) ([]model.TechnologyTagResponse, error) {
+func (ttu *TechnologyTagUsecase) GetAllTechnologyTags() ([]model.TechnologyTagResponse, error) {
 	technologyTags := []model.TechnologyTag{}
-	if err := ttu.ttr.GetAllTechnologyTags(&technologyTags, userId); err != nil {
+	if err := ttu.ttr.GetAllTechnologyTags(&technologyTags); err != nil {
 		return nil, err
 	}
 	resTechnologyTags := []model.TechnologyTagResponse{}
-	for _, v := range resTechnologyTags {
+	for _, v := range technologyTags {
 		t := model.TechnologyTagResponse{
 			ID: v.ID,
 			Name: v.Name,
@@ -37,9 +37,9 @@ func (ttu *TechnologyTagUsecase) GetAllTechnologyTags(userId uint) ([]model.Tech
 	return resTechnologyTags, nil
 }
 
-func (ttu *TechnologyTagUsecase) GetTechnologyTagById(userId uint, technologyTagId uint) (model.TechnologyTagResponse, error) {
+func (ttu *TechnologyTagUsecase) GetTechnologyTagById(technologyTagId uint) (model.TechnologyTagResponse, error) {
 	technologyTag := model.TechnologyTag{}
-	if err := ttu.ttr.GetTechnologyTagById(&technologyTag, userId, technologyTagId); err != nil {
+	if err := ttu.ttr.GetTechnologyTagById(&technologyTag, technologyTagId); err != nil {
 		return model.TechnologyTagResponse{}, err
 	}
 	resTechnologyTag := model.TechnologyTagResponse{

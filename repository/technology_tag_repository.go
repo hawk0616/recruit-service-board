@@ -9,8 +9,8 @@ import (
 )
 
 type ITechnologyTagRepository interface {
-	GetAllTechnologyTags(technologyTags *[]model.TechnologyTag, userId uint) error
-	GetTechnologyTagById(technologyTag *model.TechnologyTag, userId uint, technologyTagId uint) error
+	GetAllTechnologyTags(technologyTags *[]model.TechnologyTag) error
+	GetTechnologyTagById(technologyTag *model.TechnologyTag, technologyTagId uint) error
 	CreateTechnologyTag(technologyTag *model.TechnologyTag) error
 	UpdateTechnologyTag(technologyTag *model.TechnologyTag, userId uint, technologyTagId uint) error
 	DeleteTechnologyTag(userId uint, technologyTagId uint) error
@@ -24,15 +24,15 @@ func NewTechnologyTagRepository(db *gorm.DB) ITechnologyTagRepository {
 	return &TechnologyTagRepository{db}
 }
 
-func (ttr *TechnologyTagRepository) GetAllTechnologyTags(technologyTags *[]model.TechnologyTag, userId uint) error {
-	if err := ttr.db.Joins("User").Where("user_id = ?", userId).Order("created_at").Find(&technologyTags).Error; err != nil {
+func (ttr *TechnologyTagRepository) GetAllTechnologyTags(technologyTags *[]model.TechnologyTag) error {
+	if err := ttr.db.Order("created_at").Find(&technologyTags).Error; err != nil {
 		return err
 	}
 	return nil
 }
 
-func (ttr *TechnologyTagRepository) GetTechnologyTagById(technologyTag *model.TechnologyTag, userId uint, technologyTagId uint) error {
-	if err := ttr.db.Joins("User").Where("user_id = ?", userId).First(technologyTag, technologyTagId).Error; err != nil {
+func (ttr *TechnologyTagRepository) GetTechnologyTagById(technologyTag *model.TechnologyTag, technologyTagId uint) error {
+	if err := ttr.db.First(technologyTag, technologyTagId).Error; err != nil {
 		return err
 	}
 	return nil

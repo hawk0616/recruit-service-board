@@ -12,10 +12,12 @@ import (
 
 func NewRouter(
 	uc controller.IUserController, 
-	cc controller.ICompanyController, 
+	cc controller.ICompanyController,
+	lc controller.ILikeController,
 	tc controller.ITechnologyController,
 	ctc controller.ICompanyTechnologyController,
 	ttc controller.ITechnologyTagController,
+	tttc controller.ITechnologyTechnologyTagController,
 	)*echo.Echo {
 	e := echo.New()
 
@@ -43,6 +45,15 @@ func NewRouter(
 	e.POST("/login", uc.LogIn)
 	e.POST("/logout", uc.LogOut)
 	e.GET("/csrf", uc.CsrfToken)
+
+	// Like
+	l := e.Group("/users/:userId/likes")
+	l.Use(echojwt.WithConfig(echojwt.Config{
+		SigningKey:  []byte(os.Getenv("SECRET")),
+		TokenLookup: "cookie:token",
+	}))
+	l.POST("", lc.CreateLike)
+	l.DELETE("/:companyId", lc.DeleteLike)
 
 	// Company
 	c := e.Group("/companies")
@@ -72,6 +83,10 @@ func NewRouter(
 	t.PUT("/:technologyId", tc.UpdateTechnology)
 	t.DELETE("/:technologyId", tc.DeleteTechnology)
 
+	// TechnologyTechnologyTag
+	t.POST("/:technologyId/technology_technology_tags", tttc.CreateTechnologyTechnologyTag)
+	t.DELETE("/:technologyId/technology_technology_tags/:id", tttc.CreateTechnologyTechnologyTag)
+
 	// TechnologyTag
 	tt := e.Group("/technology_tags")
 	tt.Use(echojwt.WithConfig(echojwt.Config{
@@ -82,7 +97,7 @@ func NewRouter(
 	tt.GET("/:technologyTagId", ttc.GetTechnologyTagById)
 	tt.POST("", ttc.CreateTechnologyTag)
 	tt.PUT("/:technologyTagId", ttc.UpdateTechnologyTag)
-	tt.DELETE("/:technologyTagId", ttc.DeleteTechnologyTag)	
+	tt.DELETE("/:technologyTagId", ttc.DeleteTechnologyTag)
 
 	return e
 }

@@ -16,5 +16,7 @@ func main() {
 		&model.Technology{}, 
 		&model.CompanyTechnology{},
 		&model.TechnologyTag{},
+		&model.TechnologyTechnologyTag{},
+		&model.Like{},
 	)
 }

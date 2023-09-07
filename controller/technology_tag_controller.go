@@ -27,11 +27,7 @@ func NewTechnologyTagController(ttu usecase.ITechnologyTagUsecase) ITechnologyTa
 }
 
 func (ttc *technologyTagController) GetAllTechnologyTags(c echo.Context) error {
-	user := c.Get("user").(*jwt.Token)
-	claims := user.Claims.(jwt.MapClaims)
-	userId := claims["user_id"]
-
-	technologyTagsRes, err := ttc.ttu.GetAllTechnologyTags(uint(userId.(float64)))
+	technologyTagsRes, err := ttc.ttu.GetAllTechnologyTags()
 	if err != nil {
 		return c.JSON(http.StatusInternalServerError, err)
 	}
@@ -39,12 +35,9 @@ func (ttc *technologyTagController) GetAllTechnologyTags(c echo.Context) error {
 }
 
 func (ttc *technologyTagController) GetTechnologyTagById(c echo.Context) error {
-	user := c.Get("user").(*jwt.Token)
-	claims := user.Claims.(jwt.MapClaims)
-	userId := claims["user_id"]
 	id := c.Param("technologyTagId")
 	technologyTagId, _ := strconv.Atoi(id)
-	technologyTagRes, err := ttc.ttu.GetTechnologyTagById(uint(userId.(float64)), uint(technologyTagId))
+	technologyTagRes, err := ttc.ttu.GetTechnologyTagById(uint(technologyTagId))
 	if err != nil {
 		return c.JSON(http.StatusInternalServerError, err)
 	}

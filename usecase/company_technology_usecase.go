@@ -20,7 +20,6 @@ func NewCompanyTechnologyUsecase(ctr repository.ICompanyTechnologyRepository) IC
 }
 
 func (ctu *CompanyTechnologyUsecase) CreateCompanyTechnology(companyTechnology model.CompanyTechnology) (model.CompanyTechnologyResponse, error) {
-	fmt.Println(&companyTechnology)
 	if err := ctu.ctr.CreateCompanyTechnology(&companyTechnology); err != nil {
 		return model.CompanyTechnologyResponse{}, err
 	}
@@ -29,6 +28,7 @@ func (ctu *CompanyTechnologyUsecase) CreateCompanyTechnology(companyTechnology m
 		CompanyID: companyTechnology.CompanyID,
 		TechnologyID: companyTechnology.TechnologyID,
 	}
+	fmt.Println(resCompanyTechnology)
 	return resCompanyTechnology, nil
 }
 
