@@ -17,9 +17,9 @@ func NewDB() *gorm.DB {
 			log.Fatalln(err)
 		}
 	}
-	dsn := "admin:admin@tcp(localhost:3309)/admin?parseTime=true"
+	dsn := "admin:admin@tcp(db:3306)/admin?parseTime=true"
 	fmt.Println(dsn)
-  db, err := gorm.Open(mysql.Open(dsn), &gorm.Config{})
+	db, err := gorm.Open(mysql.Open(dsn), &gorm.Config{})
 	if err != nil {
 		log.Fatalln(err)
 	}

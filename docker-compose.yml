@@ -1,25 +1,40 @@
-version: "3.8"
+version: '3.8'
+
 services:
-  db:
-    image: mysql:8.0
+  app:
+    container_name: app
+    build:
+      context: .
+      dockerfile: app.dockerfile
+    tty: true
     ports:
-      - "3309:3306"
+      - 8080:8080
+    depends_on:
+      - db
+    volumes:
+      - .:/app
+
+  db:
+    container_name: db
+    build:
+      context: .
+      dockerfile: db.dockerfile
+    tty: true
+    ports:
+      - 3309:3306
     environment:
       MYSQL_ROOT_PASSWORD: admin
       MYSQL_DATABASE: admin
       MYSQL_USER: admin
       MYSQL_PASSWORD: admin
     volumes:
-      - ./data:/var/lib/mysql
+      - type: volume
+        source: mysql_data
+        target: /var/lib/mysql
+    networks:
+      - default
 
-  tool:
-    image: phpmyadmin:latest
-    depends_on:
-      - db
-    environment:
-      - PMA_ARBITRARY=1
-      - PMA_HOSTS=db
-      - PMA_USER=user
-      - PMA_PASSWORD=password
-    ports:
-      - "7999:80"
+networks:
+  default:
+volumes:
+  mysql_data:

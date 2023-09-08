@@ -21,6 +21,7 @@ func main() {
 	userRepository := repository.NewUserRepository(db)
 	companyRepository := repository.NewCompanyRepository(db)
 	likeRepository := repository.NewLikeRepository(db)
+	commentRepository := repository.NewCommentRepository(db)
 	technologyRepository := repository.NewTechnologyRepository(db)
 	companyTechnologyRepository := repository.NewCompanyTechnologyRepository(db)
 	technologyTagRepository := repository.NewTechnologyTagRepository(db)
@@ -30,6 +31,7 @@ func main() {
 	userUsecase := usecase.NewUserUsecase(userRepository, userValidator)
 	companyUsecase := usecase.NewCompanyUsecase(companyRepository, companyValidator)
 	likeUsecase := usecase.NewLikeUsecase(likeRepository)
+	commentUsecase := usecase.NewCommentUsecase(commentRepository)
 	technologyUsecase := usecase.NewTechnologyUsecase(technologyRepository)
 	companyTechnologyUsecase := usecase.NewCompanyTechnologyUsecase(companyTechnologyRepository)
 	technologyTagUsecase := usecase.NewTechnologyTagUsecase(technologyTagRepository)
@@ -39,6 +41,7 @@ func main() {
 	userController := controller.NewUserController(userUsecase)
 	companyController := controller.NewCompanyController(companyUsecase)
 	likeController := controller.NewLikeController(likeUsecase)
+	commentController := controller.NewCommentController(commentUsecase)
 	technologyController := controller.NewTechnologyController(technologyUsecase)
 	companyTechnologyController := controller.NewCompanyTechnologyController(companyTechnologyUsecase)
 	technologyTagController := controller.NewTechnologyTagController(technologyTagUsecase)
@@ -49,6 +52,7 @@ func main() {
 		userController,
 		companyController,
 		likeController,
+		commentController,
 		technologyController,
 		companyTechnologyController,
 		technologyTagController,
@@ -56,5 +60,5 @@ func main() {
 	)
 
 	// start server
-	e.Logger.Fatal(e.Start(":8090"))
+	e.Logger.Fatal(e.Start(":8080"))
 }

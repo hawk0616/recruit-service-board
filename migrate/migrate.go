@@ -18,5 +18,6 @@ func main() {
 		&model.TechnologyTag{},
 		&model.TechnologyTechnologyTag{},
 		&model.Like{},
+		&model.Comment{},
 	)
 }
