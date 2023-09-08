@@ -14,6 +14,7 @@ func NewRouter(
 	uc controller.IUserController, 
 	cc controller.ICompanyController,
 	lc controller.ILikeController,
+	cmc controller.ICommentController,
 	tc controller.ITechnologyController,
 	ctc controller.ICompanyTechnologyController,
 	ttc controller.ITechnologyTagController,
@@ -46,15 +47,6 @@ func NewRouter(
 	e.POST("/logout", uc.LogOut)
 	e.GET("/csrf", uc.CsrfToken)
 
-	// Like
-	l := e.Group("/users/:userId/likes")
-	l.Use(echojwt.WithConfig(echojwt.Config{
-		SigningKey:  []byte(os.Getenv("SECRET")),
-		TokenLookup: "cookie:token",
-	}))
-	l.POST("", lc.CreateLike)
-	l.DELETE("/:companyId", lc.DeleteLike)
-
 	// Company
 	c := e.Group("/companies")
 	c.Use(echojwt.WithConfig(echojwt.Config{
@@ -66,6 +58,24 @@ func NewRouter(
 	c.POST("", cc.CreateCompany)
 	c.PUT("/:companyId", cc.UpdateCompany)
 	c.DELETE("/:companyId", cc.DeleteCompany)
+
+	// Like
+	l := e.Group("/users/:userId/likes")
+	l.Use(echojwt.WithConfig(echojwt.Config{
+		SigningKey:  []byte(os.Getenv("SECRET")),
+		TokenLookup: "cookie:token",
+	}))
+	l.POST("", lc.CreateLike)
+	l.DELETE("/:companyId", lc.DeleteLike)
+
+	// Comment
+	cm := e.Group("/users/:userId/comments")
+	cm.Use(echojwt.WithConfig(echojwt.Config{
+		SigningKey:  []byte(os.Getenv("SECRET")),
+		TokenLookup: "cookie:token",
+	}))
+	cm.POST("", cmc.CreateComment)
+	cm.DELETE("/:companyId", cmc.DeleteComment)
 
 	// CompanyTechnology
 	c.POST("/:companyId/company_technologies", ctc.CreateCompanyTechnology)
