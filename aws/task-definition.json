@@ -1,0 +1,31 @@
+{
+  "family": "go-simple-server",
+  "taskRoleArn": "arn:aws:iam::${{ secrets.AWS_ACCOUNT_ID }}:role/recruit-service-board-ecs-task",
+  "executionRoleArn": "arn:aws:iam::${{ secrets.AWS_ACCOUNT_ID }}:role/recruit-service-board-ecs",
+  "networkMode": "awsvpc",
+  "cpu": "256",
+  "memory": "512",
+  "requiresCompatibilities": ["FARGATE"],
+  "containerDefinitions": [
+    {
+      "name": "go-simple-server",
+      "image": "",
+      "portMappings": [
+        {
+          "protocol": "tcp",
+          "hostPort": 8080,
+          "containerPort": 8080
+        }
+      ],
+      "logConfiguration": {
+        "logDriver": "awslogs",
+        "options": {
+          "awslogs-group": "/aws/ecs/recruit-service-board",
+          "awslogs-region": "ap-northeast-1",
+          "awslogs-stream-prefix": "app"
+        }
+      },
+      "essential": true
+    }
+  ]
+}
