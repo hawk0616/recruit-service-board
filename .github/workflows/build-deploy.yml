@@ -46,6 +46,8 @@ jobs:
       - name: Build and push
         uses: docker/build-push-action@v3
         with:
+          context: .
+          file: ./app.dockerfile
           push: true
           tags: |
             ${{ env.ECR_REGISTRY }}/${{ env.ECR_REPOSITORY }}:${{ github.sha }}
