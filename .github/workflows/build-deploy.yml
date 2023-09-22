@@ -18,6 +18,7 @@ permissions:
 jobs:
   build-and-deploy:
     runs-on: ubuntu-latest
+    timeout-minutes: 15
     steps:
       - name: Checkout
         uses: actions/checkout@v3
@@ -74,3 +75,4 @@ jobs:
           service: ${{ env.APP }}
           cluster: ${{ env.APP }}
           wait-for-service-stability: true
+        timeout-minutes: 5
