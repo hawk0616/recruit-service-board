@@ -1,8 +1,8 @@
-FROM golang:1.19
+FROM golang:1.20
 
 WORKDIR /app
 
-COPY go.mod go.sum ./
+COPY . .
 RUN go mod download && go mod verify
 
 CMD ["go", "run", "main.go"]
