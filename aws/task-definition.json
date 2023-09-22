@@ -1,5 +1,5 @@
 {
-  "family": "go-simple-server",
+  "family": "recruit-service-board",
   "taskRoleArn": "arn:aws:iam::${{ secrets.AWS_ACCOUNT_ID }}:role/recruit-service-board-ecs-task",
   "executionRoleArn": "arn:aws:iam::${{ secrets.AWS_ACCOUNT_ID }}:role/recruit-service-board-ecs",
   "networkMode": "awsvpc",
@@ -8,7 +8,7 @@
   "requiresCompatibilities": ["FARGATE"],
   "containerDefinitions": [
     {
-      "name": "go-simple-server",
+      "name": "recruit-service-board",
       "image": "",
       "portMappings": [
         {
