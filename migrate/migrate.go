@@ -1,14 +1,14 @@
 package main
 
 import (
-	"fmt"
+	"log"
 	"recruit-info-service/db"
 	"recruit-info-service/model"
 )
 
 func main() {
 	dbConn := db.NewDB()
-	defer fmt.Println("Successfully Migrated")
+	defer log.Println("Successfully Migrated")
 	defer db.CloseDB(dbConn)
 	dbConn.AutoMigrate(
 		&model.User{}, 
