@@ -68,6 +68,19 @@ jobs:
           container-name: ${{ env.APP }}
           image: ${{ env.ECR_REGISTRY }}/${{ env.ECR_REPOSITORY }}:${{ github.sha }}
       
+      - name: Setup SSH Key
+        env:
+          PRIVATE_KEY: ${{ secrets.SSH_PRIVATE_KEY }}
+        run: |
+          mkdir -p ~/.ssh
+          echo "$PRIVATE_KEY" > ~/.ssh/id_rsa
+          chmod 600 ~/.ssh/id_rsa
+          ssh-keyscan -H ${{ secrets.EC2_HOST }} >> ~/.ssh/known_hosts
+
+      - name: Setup SSH Tunnel
+        run: |
+          ssh -f -N -L 5432:${{ secrets.DB_HOST }}:5432 -i ~/.ssh/id_rsa ${{ secrets.EC2_USER }}@${{ secrets.EC2_HOST }}
+
       - name: Run Database Migration
         run: go run migrate/migrate.go
         env:
