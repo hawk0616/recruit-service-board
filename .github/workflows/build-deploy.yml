@@ -80,6 +80,8 @@ jobs:
       - name: Setup SSH Tunnel
         run: |
           chmod 600 ~/.ssh/id_rsa
+          eval $(ssh-agent -s)
+          ssh-add ~/.ssh/id_rsa
           ssh -v -f -N -L 5432:${{ secrets.DB_HOST }}:5432 -i ~/.ssh/id_rsa ${{ secrets.EC2_USER }}@${{ secrets.EC2_HOST }}
 
       - name: Run Database Migration
