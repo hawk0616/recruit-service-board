@@ -67,28 +67,19 @@ jobs:
           task-definition: ./aws/task-definition.json
           container-name: ${{ env.APP }}
           image: ${{ env.ECR_REGISTRY }}/${{ env.ECR_REPOSITORY }}:${{ github.sha }}
-      
-      - name: Setup SSH Key
-        env:
-          PRIVATE_KEY: ${{ secrets.SSH_PRIVATE_KEY }}
+
+      - name: Install Session Manager Plugin
         run: |
-          mkdir -p ~/.ssh
-          echo "$PRIVATE_KEY" > ~/.ssh/id_rsa
-          chmod 600 ~/.ssh/id_rsa
-          ssh-keyscan -H ${{ secrets.EC2_HOST }} >> ~/.ssh/known_hosts
+          curl "https://s3.amazonaws.com/session-manager-downloads/plugin/latest/ubuntu_64bit/session-manager-plugin.deb" -o "session-manager-plugin.deb"
+          sudo dpkg -i session-manager-plugin.deb
 
-      - name: Setup SSH Agent
-        uses: webfactory/ssh-agent@v0.5.3
-        with:
-          ssh-private-key: ${{ secrets.SSH_PRIVATE_KEY }}
-
-      - name: Setup SSH Tunnel
+      - name: Run Database Migration via Session Manager
         run: |
-          chmod 600 ~/.ssh/id_rsa
-          ssh -v -f -N -L 5432:${{ secrets.DB_HOST }}:5432 -i ~/.ssh/id_rsa ${{ secrets.EC2_USER }}@${{ secrets.EC2_HOST }}
-
-      - name: Run Database Migration
-        run: go run migrate/migrate.go
+          aws ssm send-command \
+            --instance-ids "i-08401505f601fc3c8" \
+            --document-name "AWS-RunShellScript" \
+            --parameters commands=["ls /", "cd recruit-info-service", "go run migrate/migrate.go"] \
+            --region ap-northeast-1
         env:
           DB_USER: ${{ secrets.DB_USER }}
           DB_PASSWORD: ${{ secrets.DB_PASSWORD }}
