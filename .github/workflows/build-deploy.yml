@@ -68,25 +68,13 @@ jobs:
           container-name: ${{ env.APP }}
           image: ${{ env.ECR_REGISTRY }}/${{ env.ECR_REPOSITORY }}:${{ github.sha }}
 
-      - name: Install Session Manager Plugin
+      - name: Trigger Lambda through API Gateway
         run: |
-          curl "https://s3.amazonaws.com/session-manager-downloads/plugin/latest/ubuntu_64bit/session-manager-plugin.deb" -o "session-manager-plugin.deb"
-          sudo dpkg -i session-manager-plugin.deb
-
-      - name: Run Database Migration via Session Manager
-        run: |
-          aws ssm send-command \
-            --instance-ids "i-08401505f601fc3c8" \
-            --document-name "AWS-RunShellScript" \
-            --parameters commands=["ls /", "cd recruit-info-service", "go run migrate/migrate.go"] \
-            --region ap-northeast-1
-        env:
-          DB_USER: ${{ secrets.DB_USER }}
-          DB_PASSWORD: ${{ secrets.DB_PASSWORD }}
-          DB_HOST: ${{ secrets.DB_HOST }}
-          DB_PORT: ${{ secrets.DB_PORT }}
-          DB_NAME: ${{ secrets.DB_NAME }}
-        timeout-minutes: 5
+          response=$(curl -s -o /dev/null -w "%{http_code}" ${{ secrets.API_GATEWAY_ENDPOINT }})
+          if [ "$response" -ne 200 ]; then
+            echo "Failed to trigger Lambda through API Gateway. HTTP Response code: $response"
+            exit 1
+          fi
 
       - name: Deploy Amazon ECS task definition
         uses: aws-actions/amazon-ecs-deploy-task-definition@v1
