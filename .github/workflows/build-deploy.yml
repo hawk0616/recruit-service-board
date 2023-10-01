@@ -70,7 +70,7 @@ jobs:
 
       - name: Trigger Lambda through API Gateway
         run: |
-          response=$(curl -s -o /dev/null -w "%{http_code}" -H "x-api-key: ${{ secrets.API_KEY }}" ${{ secrets.API_GATEWAY_ENDPOINT }})
+          response=$(curl -s -o /dev/null -w "%{http_code}" ${{ secrets.API_GATEWAY_ENDPOINT }})
           if [ "$response" -ne 200 ]; then
             echo "Failed to trigger Lambda through API Gateway. HTTP Response code: $response"
             exit 1
