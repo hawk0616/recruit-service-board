@@ -8,6 +8,7 @@ type Like struct {
 	Company      Company `json:"company" gorm:"foreignKey:CompanyID; constraint:OnDelete:CASCADE"`
 }
 
+// For Responses
 type LikeResponse struct {
 	UserID       uint `json:"user_id" gorm:"not null"`
 	CompanyID    uint `json:"company_id" gorm:"not null"`

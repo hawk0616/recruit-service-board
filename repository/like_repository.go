@@ -10,6 +10,7 @@ import (
 type ILikeRepository interface {
 	CreateLike(like *model.Like) error
 	DeleteLike(userId uint, companyId uint) error
+	CountLike(userId uint, companyId uint) (int, error)
 }
 
 type LikeRepository struct {
@@ -39,4 +40,12 @@ func (lr *LikeRepository) DeleteLike(userId uint, companyId uint) error {
 	}
 	fmt.Println("ccc")
 	return nil
+}
+
+func (lr *LikeRepository) CountLike(userId uint, companyId uint) (int, error) {
+	var count int64
+	if err := lr.db.Model(&model.Like{}).Where("user_id = ? AND company_id = ?", userId, companyId).Count(&count).Error; err != nil {
+		return 0, err
+	}
+	return int(count), nil
 }
