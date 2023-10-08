@@ -6,7 +6,6 @@ import (
 	"recruit-info-service/usecase"
 	"strconv"
 
-	"github.com/golang-jwt/jwt/v4"
 	"github.com/labstack/echo/v4"
 )
 
@@ -27,11 +26,7 @@ func NewCompanyController(cu usecase.ICompanyUsecase) ICompanyController {
 }
 
 func (cc *companyController) GetAllCompanies(c echo.Context) error {
-	user := c.Get("user").(*jwt.Token)
-	claims := user.Claims.(jwt.MapClaims)
-	userId := claims["user_id"]
-
-	companiesRes, err := cc.cu.GetAllCompanies(uint(userId.(float64)))
+	companiesRes, err := cc.cu.GetAllCompanies()
 	if err != nil {
 		return c.JSON(http.StatusInternalServerError, err)
 	}
@@ -39,12 +34,9 @@ func (cc *companyController) GetAllCompanies(c echo.Context) error {
 }
 
 func (cc *companyController) GetCompanyById(c echo.Context) error {
-	user := c.Get("user").(*jwt.Token)
-	claims := user.Claims.(jwt.MapClaims)
-	userId := claims["user_id"]
 	id := c.Param("companyId")
 	companyId, _ := strconv.Atoi(id)
-	companyRes, err := cc.cu.GetCompanyById(uint(userId.(float64)), uint(companyId))
+	companyRes, err := cc.cu.GetCompanyById(uint(companyId))
 	if err != nil {
 		return c.JSON(http.StatusInternalServerError, err)
 	}
@@ -52,15 +44,10 @@ func (cc *companyController) GetCompanyById(c echo.Context) error {
 }
 
 func (cc *companyController) CreateCompany(c echo.Context) error {
-	user := c.Get("user").(*jwt.Token)
-	claims := user.Claims.(jwt.MapClaims)
-	userId := claims["user_id"]
-
 	company := model.Company{}
 	if err := c.Bind(&company); err != nil {
 		return err
 	}
-	company.UserId = uint(userId.(float64))
 	companyRes, err := cc.cu.CreateCompany(company)
 	if err != nil {
 		return c.JSON(http.StatusInternalServerError, err.Error())
@@ -69,9 +56,6 @@ func (cc *companyController) CreateCompany(c echo.Context) error {
 }
 
 func (cc *companyController) UpdateCompany(c echo.Context) error {
-	user := c.Get("user").(*jwt.Token)
-	claims := user.Claims.(jwt.MapClaims)
-	userId := claims["user_id"]
 	id := c.Param("companyId")
 	companyId, _ := strconv.Atoi(id)
 
@@ -79,7 +63,7 @@ func (cc *companyController) UpdateCompany(c echo.Context) error {
 	if err := c.Bind(&company); err != nil {
 		return err
 	}
-	companyRes, err := cc.cu.UpdateCompany(company, uint(userId.(float64)), uint(companyId))
+	companyRes, err := cc.cu.UpdateCompany(company, uint(companyId))
 	if err != nil {
 		return c.JSON(http.StatusInternalServerError, err.Error())
 	}
@@ -87,13 +71,10 @@ func (cc *companyController) UpdateCompany(c echo.Context) error {
 }
 
 func (cc *companyController) DeleteCompany(c echo.Context) error {
-	user := c.Get("user").(*jwt.Token)
-	claims := user.Claims.(jwt.MapClaims)
-	userId := claims["user_id"]
 	id := c.Param("companyId")
 	companyId, _ := strconv.Atoi(id)
 
-	if err := cc.cu.DeleteCompany(uint(userId.(float64)), uint(companyId)); err != nil {
+	if err := cc.cu.DeleteCompany(uint(companyId)); err != nil {
 		return c.JSON(http.StatusInternalServerError, err.Error())
 	}
 	return c.NoContent(http.StatusOK)

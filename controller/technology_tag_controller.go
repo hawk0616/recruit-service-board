@@ -45,15 +45,10 @@ func (ttc *technologyTagController) GetTechnologyTagById(c echo.Context) error {
 }
 
 func (ttc *technologyTagController) CreateTechnologyTag(c echo.Context) error {
-	user := c.Get("user").(*jwt.Token)
-	claims := user.Claims.(jwt.MapClaims)
-	userId := claims["user_id"]
-
 	technologyTag := model.TechnologyTag{}
 	if err := c.Bind(&technologyTag); err != nil {
 		return c.JSON(http.StatusBadRequest, err)
 	}
-	technologyTag.UserId = uint(userId.(float64))
 	technologyRes, err := ttc.ttu.CreateTechnologyTag(technologyTag)
 	if err != nil {
 		return c.JSON(http.StatusInternalServerError, err)
