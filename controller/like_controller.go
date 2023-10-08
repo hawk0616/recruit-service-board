@@ -12,6 +12,7 @@ import (
 type ILikeController interface {
 	CreateLike(c echo.Context) error
 	DeleteLike(c echo.Context) error
+	CountLike(c echo.Context) error
 }
 
 type LikeController struct {
@@ -61,4 +62,25 @@ func (lc *LikeController) DeleteLike(c echo.Context) error {
 		return c.JSON(http.StatusInternalServerError, err.Error())
 	}
 	return c.NoContent(http.StatusOK)
+}
+
+func (lc *LikeController) CountLike(c echo.Context) error {
+	user := c.Get("user").(*jwt.Token)
+	claims := user.Claims.(jwt.MapClaims)
+	userId := claims["user_id"]
+
+	var reqBody struct {
+		CompanyID uint `json:"companyId"`
+	}
+
+	if err := c.Bind(&reqBody); err != nil {
+		return c.JSON(http.StatusBadRequest, err)
+	}
+
+	count, err := lc.lu.CountLike(uint(userId.(float64)), reqBody.CompanyID)
+	if err != nil {
+		return c.JSON(http.StatusInternalServerError, err)
+	}
+
+	return c.JSON(http.StatusOK, count)
 }

@@ -16,12 +16,13 @@ import (
 
 func NewDB() *gorm.DB {
 	var user, password, host, port, dbname string
+	
+	err := godotenv.Load()
+	if err != nil {
+		log.Fatalln(err)
+	}
 
 	if os.Getenv("GO_ENV") == "dev" {
-		err := godotenv.Load()
-		if err != nil {
-			log.Fatalln(err)
-		}
 		user = os.Getenv("DB_USER")
 		password = os.Getenv("DB_PASSWORD")
 		host = os.Getenv("DB_HOST")
@@ -35,7 +36,8 @@ func NewDB() *gorm.DB {
 		dbname = getParameter("/recruit-service-board/rds/name")
 	}
 
-	dsn := fmt.Sprintf("%s:%s@tcp(%s:%s)/%s?parseTime=true", user, password, host, port, dbname)
+	dsn := fmt.Sprintf("%s:%s@tcp(%s:%s)/%s", user, password, host, port, dbname)
+
 	db, err := gorm.Open(mysql.Open(dsn), &gorm.Config{})
 	if err != nil {
 		log.Fatalln("mysql can not open: ",err)
