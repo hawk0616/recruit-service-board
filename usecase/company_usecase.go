@@ -7,11 +7,11 @@ import (
 )
 
 type ICompanyUsecase interface {
-	GetAllCompanies(userId uint) ([]model.CompanyResponse, error)
-	GetCompanyById(userId uint, companyId uint) (model.CompanyResponse, error)
+	GetAllCompanies() ([]model.CompanyResponse, error)
+	GetCompanyById(companyId uint) (model.CompanyResponse, error)
 	CreateCompany(company model.Company) (model.CompanyResponse, error)
-	UpdateCompany(company model.Company, userId uint, companyId uint) (model.CompanyResponse, error)
-	DeleteCompany(userId uint, companyId uint) error
+	UpdateCompany(company model.Company, companyId uint) (model.CompanyResponse, error)
+	DeleteCompany(companyId uint) error
 }
 
 type CompanyUsecase struct {
@@ -23,9 +23,9 @@ func NewCompanyUsecase(cr repository.ICompanyRepository, cv validator.ICompanyVa
 	return &CompanyUsecase{cr, cv}
 }
 
-func (cu *CompanyUsecase) GetAllCompanies(userId uint) ([]model.CompanyResponse, error) {
+func (cu *CompanyUsecase) GetAllCompanies() ([]model.CompanyResponse, error) {
 	companies := []model.Company{}
-	if err := cu.cr.GetAllCompanies(&companies, userId); err != nil {
+	if err := cu.cr.GetAllCompanies(&companies); err != nil {
 		return nil, err
 	}
 	resCompanies := []model.CompanyResponse{}
@@ -42,9 +42,9 @@ func (cu *CompanyUsecase) GetAllCompanies(userId uint) ([]model.CompanyResponse,
 	return resCompanies, nil
 }
 
-func (cu *CompanyUsecase) GetCompanyById(userId uint, companyId uint) (model.CompanyResponse, error) {
+func (cu *CompanyUsecase) GetCompanyById(companyId uint) (model.CompanyResponse, error) {
 	company := model.Company{}
-	if err := cu.cr.GetCompanyById(&company, userId, companyId); err != nil {
+	if err := cu.cr.GetCompanyById(&company, companyId); err != nil {
 		return model.CompanyResponse{}, err
 	}
 	resCompany := model.CompanyResponse{
@@ -74,12 +74,12 @@ func (cu *CompanyUsecase) CreateCompany(company model.Company) (model.CompanyRes
 	return resCompany, nil
 }
 
-func (cu *CompanyUsecase) UpdateCompany(company model.Company, userId uint, companyId uint) (model.CompanyResponse, error) {
+func (cu *CompanyUsecase) UpdateCompany(company model.Company, companyId uint) (model.CompanyResponse, error) {
 	if err := cu.cv.CompanyValidate(company); err != nil {
 		return model.CompanyResponse{}, err
 	}
 	// 成功した場合は第一引数で渡したcompanyのアドレスが示す先のメモリ領域のcompanyの値が書き変わっている
-	if err := cu.cr.UpdateCompany(&company, userId, companyId); err != nil {
+	if err := cu.cr.UpdateCompany(&company, companyId); err != nil {
 		return model.CompanyResponse{}, err
 	}
 	resCompany := model.CompanyResponse{
@@ -92,8 +92,8 @@ func (cu *CompanyUsecase) UpdateCompany(company model.Company, userId uint, comp
 	return resCompany, nil
 }
 
-func (company *CompanyUsecase) DeleteCompany(userId uint, companyId uint) error {
-	if err := company.cr.DeleteCompany(userId, companyId); err != nil {
+func (company *CompanyUsecase) DeleteCompany(companyId uint) error {
+	if err := company.cr.DeleteCompany(companyId); err != nil {
 		return err
 	}
 	return nil

@@ -1,6 +1,7 @@
 package controller
 
 import (
+	"fmt"
 	"net/http"
 	"recruit-info-service/model"
 	"recruit-info-service/usecase"
@@ -65,19 +66,8 @@ func (lc *LikeController) DeleteLike(c echo.Context) error {
 }
 
 func (lc *LikeController) CountLike(c echo.Context) error {
-	user := c.Get("user").(*jwt.Token)
-	claims := user.Claims.(jwt.MapClaims)
-	userId := claims["user_id"]
-
-	var reqBody struct {
-		CompanyID uint `json:"companyId"`
-	}
-
-	if err := c.Bind(&reqBody); err != nil {
-		return c.JSON(http.StatusBadRequest, err)
-	}
-
-	count, err := lc.lu.CountLike(uint(userId.(float64)), reqBody.CompanyID)
+	fmt.Println("aaa")
+	count, err := lc.lu.CountLike()
 	if err != nil {
 		return c.JSON(http.StatusInternalServerError, err)
 	}

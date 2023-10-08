@@ -9,11 +9,11 @@ import (
 )
 
 type ITechnologyRepository interface {
-	GetAllTechnologies(technologies *[]model.Technology, userId uint) error
-	GetTechnologyById(technology *model.Technology, userId uint, technologyId uint) error
+	GetAllTechnologies(technologies *[]model.Technology) error
+	GetTechnologyById(technology *model.Technology, technologyId uint) error
 	CreateTechnology(technology *model.Technology) error
-	UpdateTechnology(technology *model.Technology, userId uint, technologyId uint) error
-	DeleteTechnology(userId uint, technologyId uint) error
+	UpdateTechnology(technology *model.Technology, technologyId uint) error
+	DeleteTechnology(technologyId uint) error
 }
 
 type TechnologyRepository struct {
@@ -24,15 +24,15 @@ func NewTechnologyRepository(db *gorm.DB) ITechnologyRepository {
 	return &TechnologyRepository{db}
 }
 
-func (tr *TechnologyRepository) GetAllTechnologies(technologies *[]model.Technology, userId uint) error {
-	if err := tr.db.Joins("User").Where("user_id = ?", userId).Order("created_at").Find(&technologies).Error; err != nil {
+func (tr *TechnologyRepository) GetAllTechnologies(technologies *[]model.Technology) error {
+	if err := tr.db.Order("created_at").Find(&technologies).Error; err != nil {
 		return err
 	}
 	return nil
 }
 
-func (tr *TechnologyRepository) GetTechnologyById(technology *model.Technology, userId uint, technologyId uint) error {
-	if err := tr.db.Joins("User").Where("user_id = ?", userId).First(technology, technologyId).Error; err != nil {
+func (tr *TechnologyRepository) GetTechnologyById(technology *model.Technology, technologyId uint) error {
+	if err := tr.db.First(technology, technologyId).Error; err != nil {
 		return err
 	}
 	return nil
@@ -45,9 +45,9 @@ func (tr *TechnologyRepository) CreateTechnology(technology *model.Technology) e
 	return nil
 }
 
-func (tr *TechnologyRepository) UpdateTechnology(technology *model.Technology, userId uint, technologyId uint) error {
+func (tr *TechnologyRepository) UpdateTechnology(technology *model.Technology, technologyId uint) error {
 	technology.ID = technologyId
-	result := tr.db.Model(technology).Clauses(clause.Returning{}).Where("id=? AND user_id=?", technologyId, userId).Updates(
+	result := tr.db.Model(technology).Clauses(clause.Returning{}).Where("id=? AND user_id=?", technologyId).Updates(
 		map[string]interface{}{
 			"Name":        technology.Name,
 			"Description": technology.Description,
@@ -63,8 +63,8 @@ func (tr *TechnologyRepository) UpdateTechnology(technology *model.Technology, u
 	return nil
 }
 
-func (tr *TechnologyRepository) DeleteTechnology(userId uint, technologyId uint) error {
-	result := tr.db.Where("id=? AND user_id=?", technologyId, userId).Delete(&model.Technology{}, technologyId)
+func (tr *TechnologyRepository) DeleteTechnology(technologyId uint) error {
+	result := tr.db.Where("id=? AND user_id=?", technologyId).Delete(&model.Technology{}, technologyId)
 	if result.Error != nil {
 		return result.Error
 	}

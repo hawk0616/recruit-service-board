@@ -68,6 +68,13 @@ func NewRouter(
 	l.POST("", lc.CreateLike)
 	l.DELETE("/:companyId", lc.DeleteLike)
 
+	cl := e.Group("/count_likes")
+	cl.Use(echojwt.WithConfig(echojwt.Config{
+		SigningKey:  []byte(os.Getenv("SECRET")),
+		TokenLookup: "cookie:token",
+	}))
+	cl.GET("", lc.CountLike)
+
 	// Comment
 	cm := e.Group("/users/:userId/comments")
 	cm.Use(echojwt.WithConfig(echojwt.Config{
