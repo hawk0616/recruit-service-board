@@ -24,7 +24,7 @@ func NewRouter(
 
 	// CORS middleware
 	e.Use(middleware.CORSWithConfig(middleware.CORSConfig{
-		AllowOrigins: []string{"http://localhost:3004", os.Getenv("FE_URL")},
+		AllowOrigins: []string{"http://localhost:3000", os.Getenv("FE_URL")},
 		AllowHeaders: []string{echo.HeaderOrigin, echo.HeaderContentType, echo.HeaderAccept,
 			echo.HeaderAccessControlAllowHeaders, echo.HeaderXCSRFToken},
 		AllowMethods:     []string{"GET", "PUT", "POST", "DELETE"},
@@ -36,9 +36,9 @@ func NewRouter(
 		CookiePath:     "/",
 		CookieDomain:   os.Getenv("API_DOMAIN"),
 		CookieHTTPOnly: true,
-		// CookieSameSite: http.SameSiteNoneMode,
-		CookieSameSite: http.SameSiteDefaultMode,
-		//CookieMaxAge:   60,
+		CookieSameSite: http.SameSiteNoneMode,
+		// CookieSameSite: http.SameSiteDefaultMode,
+		// CookieMaxAge:   60,
 	}))
 
 	// User
@@ -60,11 +60,12 @@ func NewRouter(
 	c.DELETE("/:companyId", cc.DeleteCompany)
 
 	// Like
-	l := e.Group("/users/:userId/likes")
+	l := e.Group("/companies/likes")
 	l.Use(echojwt.WithConfig(echojwt.Config{
 		SigningKey:  []byte(os.Getenv("SECRET")),
 		TokenLookup: "cookie:token",
 	}))
+	l.GET("/:companyId", lc.CheckLikeByCompanyId)
 	l.POST("", lc.CreateLike)
 	l.DELETE("/:companyId", lc.DeleteLike)
 
@@ -73,7 +74,7 @@ func NewRouter(
 		SigningKey:  []byte(os.Getenv("SECRET")),
 		TokenLookup: "cookie:token",
 	}))
-	cl.GET("", lc.CountLike)
+	cl.GET("/:companyId", lc.CountLike)
 
 	// Comment
 	cm := e.Group("/users/:userId/comments")
@@ -84,9 +85,18 @@ func NewRouter(
 	cm.POST("", cmc.CreateComment)
 	cm.DELETE("/:companyId", cmc.DeleteComment)
 
+	ccm := e.Group("/count_comments")
+	ccm.Use(echojwt.WithConfig(echojwt.Config{
+		SigningKey:  []byte(os.Getenv("SECRET")),
+		TokenLookup: "cookie:token",
+	}))
+	ccm.GET("/:companyId", cmc.CountComment)
+
 	// CompanyTechnology
 	c.POST("/:companyId/company_technologies", ctc.CreateCompanyTechnology)
 	c.DELETE("/:companyId/company_technologies/:id", ctc.DeleteCompanyTechnology)
+
+	c.GET("/:companyId/company_technologies", ctc.GetCompanyTechnologyByCompanyId)
 
 	// Technology
 	t := e.Group("/technologies")

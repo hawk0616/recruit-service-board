@@ -6,9 +6,10 @@ import (
 )
 
 type ILikeUsecase interface {
+	CheckLikeByCompanyId(userId uint, companyId uint) (bool, error)
 	CreateLike(like model.Like) (model.LikeResponse, error)
 	DeleteLike(userId uint, companyId uint) error
-	CountLike() (int, error)
+	CountLike(companyId uint) (int, error)
 }
 
 type LikeUsecase struct {
@@ -17,6 +18,14 @@ type LikeUsecase struct {
 
 func NewLikeUsecase(lr repository.ILikeRepository) ILikeUsecase {
 	return &LikeUsecase{lr}
+}
+
+func (lu *LikeUsecase) CheckLikeByCompanyId(userId uint, companyId uint) (bool, error) {
+	isLike, err := lu.lr.CheckLikeByCompanyId(userId, companyId)
+	if err != nil {
+		return false, err
+	}
+	return isLike, nil
 }
 
 func (lu *LikeUsecase) CreateLike(like model.Like) (model.LikeResponse, error) {
@@ -37,8 +46,8 @@ func (lu *LikeUsecase) DeleteLike(userId uint, companyId uint) error {
 	return nil
 }
 
-func (lu *LikeUsecase) CountLike() (int, error) {
-	count, err := lu.lr.CountLike()
+func (lu *LikeUsecase) CountLike(companyId uint) (int, error) {
+	count, err := lu.lr.CountLike(companyId)
 	if err != nil {
 		return 0, err
 	}

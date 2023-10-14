@@ -1,6 +1,7 @@
 package repository
 
 import (
+	"errors"
 	"fmt"
 	"recruit-info-service/model"
 
@@ -8,9 +9,10 @@ import (
 )
 
 type ILikeRepository interface {
+	CheckLikeByCompanyId(userId uint, companyId uint) (bool, error)
 	CreateLike(like *model.Like) error
 	DeleteLike(userId uint, companyId uint) error
-	CountLike() (int, error)
+	CountLike(companyId uint) (int, error)
 }
 
 type LikeRepository struct {
@@ -19,6 +21,17 @@ type LikeRepository struct {
 
 func NewLikeRepository(db *gorm.DB) ILikeRepository {
 	return &LikeRepository{db}
+}
+
+func (lr *LikeRepository) CheckLikeByCompanyId(userId uint, companyId uint) (bool, error) {
+	if err := lr.db.Where("user_id = ? AND company_id = ?", userId, companyId).First(&model.Like{}).Error; err != nil {
+		// レコードが見つからない場合は、falseを返す
+		if errors.Is(err, gorm.ErrRecordNotFound) {
+			return false, nil
+		}
+		return false, err
+	}
+	return true, nil
 }
 
 func (lr *LikeRepository) CreateLike(like *model.Like) error {
@@ -31,20 +44,17 @@ func (lr *LikeRepository) CreateLike(like *model.Like) error {
 func (lr *LikeRepository) DeleteLike(userId uint, companyId uint) error {
 	result := lr.db.Where("user_id = ? AND company_id = ?", userId, companyId).Delete(&model.Like{})
 	if result.Error != nil {
-		fmt.Println("aaa")
 		return result.Error
 	}
-	if result.RowsAffected < 0 {
-		fmt.Println("bbb")
+	if result.RowsAffected == 0 {
 		return fmt.Errorf("record not found")
 	}
-	fmt.Println("ccc")
 	return nil
 }
 
-func (lr *LikeRepository) CountLike() (int, error) {
+func (lr *LikeRepository) CountLike(companyId uint) (int, error) {
 	var count int64
-	if err := lr.db.Model(&model.Like{}).Count(&count).Error; err != nil {
+	if err := lr.db.Model(&model.Like{}).Where("company_id=?", companyId).Count(&count).Error; err != nil {
 		return 0, err
 	}
 	return int(count), nil

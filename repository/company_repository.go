@@ -26,7 +26,6 @@ func NewCompanyRepository(db *gorm.DB) ICompanyRepository {
 
 func (cr *CompanyRepository) GetAllCompanies(companies *[]model.Company) error {
 	if err := cr.db.Order("created_at").Find(companies).Error; err != nil {
-		fmt.Println("errです", err)
 		return err
 	}
 	return nil

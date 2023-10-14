@@ -4,6 +4,7 @@ import (
 	"net/http"
 	"recruit-info-service/model"
 	"recruit-info-service/usecase"
+	"strconv"
 
 	"github.com/golang-jwt/jwt/v4"
 	"github.com/labstack/echo/v4"
@@ -12,6 +13,7 @@ import (
 type ICommentController interface {
 	CreateComment(c echo.Context) error
 	DeleteComment(c echo.Context) error
+	CountComment(c echo.Context) error
 }
 
 type CommentController struct {
@@ -63,4 +65,15 @@ func (cmc *CommentController) DeleteComment(c echo.Context) error {
 		return c.JSON(http.StatusInternalServerError, err.Error())
 	}
 	return c.NoContent(http.StatusOK)
+}
+
+func (cmc *CommentController) CountComment(c echo.Context) error {
+	temCompanyId := c.Param("companyId")
+	companyId, _ := strconv.Atoi(temCompanyId)
+
+	count, err := cmc.cu.CountComment(uint(companyId))
+	if err != nil {
+		return c.JSON(http.StatusInternalServerError, err)
+	}
+	return c.JSON(http.StatusOK, count)
 }
