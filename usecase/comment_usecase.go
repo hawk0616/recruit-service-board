@@ -8,6 +8,7 @@ import (
 type ICommentUsecase interface {
 	CreateComment(comment model.Comment) (model.CommentResponse, error)
 	DeleteComment(userId uint, companyId uint) error
+	CountComment(companyId uint) (int, error)
 }
 
 type CommentUsecase struct {
@@ -35,4 +36,12 @@ func (cu *CommentUsecase) DeleteComment(userId uint, companyId uint) error {
 		return err
 	}
 	return nil
+}
+
+func (cu *CommentUsecase) CountComment(companyId uint) (int, error) {
+	count, err := cu.cr.CountComment(companyId)
+	if err != nil {
+		return 0, err
+	}
+	return count, nil
 }

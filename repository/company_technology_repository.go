@@ -8,6 +8,7 @@ import (
 )
 
 type ICompanyTechnologyRepository interface {
+	GetCompanyTechnologyByCompanyId(companyId uint) ([]model.Technology, error)
 	CreateCompanyTechnology(company_technology *model.CompanyTechnology) error
 	DeleteCompanyTechnology(companyId uint, technologyId uint) error
 }
@@ -18,6 +19,22 @@ type CompanyTechnologyRepository struct {
 
 func NewCompanyTechnologyRepository(db *gorm.DB) ICompanyTechnologyRepository {
 	return &CompanyTechnologyRepository{db}
+}
+
+func (ctr *CompanyTechnologyRepository) GetCompanyTechnologyByCompanyId(companyId uint) ([]model.Technology, error) {
+	var technologies []model.Technology
+
+	err := ctr.db.Table("technologies as t").
+			Select("t.name, t.description").
+			Joins("LEFT OUTER JOIN company_technologies AS ct ON t.id = ct.technology_id").
+			Where("ct.company_id = ?", companyId).
+			Scan(&technologies).Error
+
+	if err != nil {
+			return nil, err
+	}
+
+	return technologies, nil
 }
 
 func (ctr *CompanyTechnologyRepository) CreateCompanyTechnology(company_technology *model.CompanyTechnology) error {

@@ -34,6 +34,8 @@ func (cu *CompanyUsecase) GetAllCompanies() ([]model.CompanyResponse, error) {
 			ID: v.ID,
 			Name: v.Name,
 			Description: v.Description,
+			OpenSalary: v.OpenSalary,
+			Address: v.Address,
 			CreatedAt: v.CreatedAt,
 			UpdatedAt: v.UpdatedAt,
 		}
@@ -51,6 +53,8 @@ func (cu *CompanyUsecase) GetCompanyById(companyId uint) (model.CompanyResponse,
 		ID: company.ID,
 		Name: company.Name,
 		Description: company.Description,
+		OpenSalary: company.OpenSalary,
+		Address: company.Address,
 		CreatedAt: company.CreatedAt,
 		UpdatedAt: company.UpdatedAt,
 	}

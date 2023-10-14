@@ -1,13 +1,18 @@
 package usecase
 
 import (
-	"fmt"
 	"recruit-info-service/model"
 	"recruit-info-service/repository"
 )
 
+type TechnologyResponseForCompany struct {
+	Name        string `json:"name"`
+	Description string `json:"description"`
+}
+
 type ICompanyTechnologyUsecase interface {
-	CreateCompanyTechnology(company_technology model.CompanyTechnology) (model.CompanyTechnologyResponse, error)
+	GetCompanyTechnologyByCompanyId(companyId uint) ([]TechnologyResponseForCompany, error)
+	CreateCompanyTechnology(companyTechnology model.CompanyTechnology) (model.CompanyTechnologyResponse, error)
 	DeleteCompanyTechnology(companyId uint, technologyId uint) error
 }
 
@@ -19,6 +24,23 @@ func NewCompanyTechnologyUsecase(ctr repository.ICompanyTechnologyRepository) IC
 	return &CompanyTechnologyUsecase{ctr}
 }
 
+func (ctu *CompanyTechnologyUsecase) GetCompanyTechnologyByCompanyId(companyId uint) ([]TechnologyResponseForCompany, error) {
+	technologies, err := ctu.ctr.GetCompanyTechnologyByCompanyId(companyId)
+	if err != nil {
+			return nil, err
+	}
+
+	var techResponses []TechnologyResponseForCompany
+	for _, tech := range technologies {
+		techResponses = append(techResponses, TechnologyResponseForCompany{
+			Name:        tech.Name,
+			Description: tech.Description,
+		})
+	}
+
+	return techResponses, nil
+}
+
 func (ctu *CompanyTechnologyUsecase) CreateCompanyTechnology(companyTechnology model.CompanyTechnology) (model.CompanyTechnologyResponse, error) {
 	if err := ctu.ctr.CreateCompanyTechnology(&companyTechnology); err != nil {
 		return model.CompanyTechnologyResponse{}, err
@@ -28,7 +50,6 @@ func (ctu *CompanyTechnologyUsecase) CreateCompanyTechnology(companyTechnology m
 		CompanyID: companyTechnology.CompanyID,
 		TechnologyID: companyTechnology.TechnologyID,
 	}
-	fmt.Println(resCompanyTechnology)
 	return resCompanyTechnology, nil
 }
 
