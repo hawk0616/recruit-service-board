@@ -8,6 +8,7 @@ import (
 )
 
 type ICommentRepository interface {
+	GetCommentsByCompanyId(companyId uint) ([]*model.Comment, error)
 	CreateComment(comment *model.Comment) error
 	DeleteComment(userId uint, companyId uint) error
 	CountComment(companyId uint) (int, error)
@@ -19,6 +20,14 @@ type CommentRepository struct {
 
 func NewCommentRepository(db *gorm.DB) ICommentRepository {
 	return &CommentRepository{db}
+}
+
+func (cr *CommentRepository) GetCommentsByCompanyId(companyId uint) ([]*model.Comment, error) {
+	var comments []*model.Comment
+	if err := cr.db.Where("company_id = ?", companyId).Order("created_at desc").Find(&comments).Error; err != nil {
+		return nil, err
+	}
+	return comments, nil
 }
 
 func (cr *CommentRepository) CreateComment(comment *model.Comment) error {
