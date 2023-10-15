@@ -77,20 +77,14 @@ func NewRouter(
 	cl.GET("/:companyId", lc.CountLike)
 
 	// Comment
-	cm := e.Group("/users/:userId/comments")
+	cm := e.Group("/companies/comments")
 	cm.Use(echojwt.WithConfig(echojwt.Config{
 		SigningKey:  []byte(os.Getenv("SECRET")),
 		TokenLookup: "cookie:token",
 	}))
+	cm.GET("/:companyId", cmc.GetCommentsByCompanyId)
 	cm.POST("", cmc.CreateComment)
 	cm.DELETE("/:companyId", cmc.DeleteComment)
-
-	ccm := e.Group("/count_comments")
-	ccm.Use(echojwt.WithConfig(echojwt.Config{
-		SigningKey:  []byte(os.Getenv("SECRET")),
-		TokenLookup: "cookie:token",
-	}))
-	ccm.GET("/:companyId", cmc.CountComment)
 
 	// CompanyTechnology
 	c.POST("/:companyId/company_technologies", ctc.CreateCompanyTechnology)

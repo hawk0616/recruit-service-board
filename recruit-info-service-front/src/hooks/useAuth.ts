@@ -7,7 +7,6 @@ import { useError } from './useError'
 
 export const useAuth = () => {
   const router = useRouter()
-  // const resetEditedCompany = useStore((state) => state.resetEditedCompany)
   const { switchErrorHandling } = useError()
   const [isLoading, setIsLoading] = useState<boolean>(false)
   const [error, setError] = useState(null)
@@ -66,7 +65,6 @@ export const useAuth = () => {
     setIsLoading(true)
     try {
       await axios.post(`${process.env.NEXT_PUBLIC_API_URL}/logout`)
-      // resetEditedCompany()
       router.push('/')
     } catch (err: any) {
       if (err.response.data.message) {

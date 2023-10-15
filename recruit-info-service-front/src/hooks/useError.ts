@@ -1,11 +1,9 @@
 import axios from 'axios'
 import { useRouter } from 'next/router'
 import { CsrfToken } from '../types/auth'
-import useStore from '../store/store'
 
 export const useError = () => {
   const router = useRouter()
-  // const resetEditedCompany = useStore((state) => state.resetEditedCompany)
   const getCsrfToken = async () => {
     const { data } = await axios.get<CsrfToken>(
       `${process.env.NEXT_PUBLIC_API_URL}/csrf`
@@ -20,12 +18,10 @@ export const useError = () => {
         break
       case 'invalid or expired jwt':
         alert('access token expired, please login')
-        // resetEditedCompany()
         router.push('/')
         break
       case 'missing or malformed jwt':
         alert('access token is not valid, please login')
-        // resetEditedCompany()
         router.push('/')
         break
       case 'duplicated key not allowed':

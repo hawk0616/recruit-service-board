@@ -1,6 +1,9 @@
 import Link from 'next/link';
 import { useGetCompanyById } from '@/hooks/useGetCompanyById';
 
+import { useEffect } from 'react';
+import { useRouter } from 'next/router';
+
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faArrowLeft } from "@fortawesome/free-solid-svg-icons";
 
@@ -8,11 +11,19 @@ import BorderLine from '../../components/BorderLine';
 import LoadingSpinner from '@/components/LoadingSpinner';
 import TechnologyTags from '@/components/TechnologyTags';
 import LikeButton from '@/components/LikeButton';
+import { CommentForm } from '@/components/comment/CommentForm';
+import CommentsList from '@/components/comment/GetComments';
 
 const CompanyDetailPage = () => {
   const { company, loading } = useGetCompanyById();
+  const router = useRouter();
 
-  console.log(company)
+  useEffect(() => {
+    if (!loading && !company?.id) {
+      router.push('/404');
+    }
+  }, [company, loading]);
+
 
   if (loading) {
     return <LoadingSpinner />;
@@ -53,8 +64,14 @@ const CompanyDetailPage = () => {
         <BorderLine />
         <TechnologyTags />
       </div>
-    </div>
 
+      <div className="m-8">
+        <h2 className="text-gray-600 text-xl font-semibold">ユーザーコメント</h2>
+        <BorderLine />
+        {company?.id && <CommentsList companyId={company?.id} />}
+        {company?.id && <CommentForm companyId={company.id} />}
+      </div>
+    </div>
   );
 };
 
