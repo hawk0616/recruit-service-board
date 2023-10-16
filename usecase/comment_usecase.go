@@ -3,6 +3,7 @@ package usecase
 import (
 	"recruit-info-service/model"
 	"recruit-info-service/repository"
+	"recruit-info-service/validator"
 )
 
 type ICommentUsecase interface {
@@ -14,10 +15,11 @@ type ICommentUsecase interface {
 
 type CommentUsecase struct {
 	cr repository.ICommentRepository
+	cv validator.ICommentValidator
 }
 
-func NewCommentUsecase(cr repository.ICommentRepository) ICommentUsecase {
-	return &CommentUsecase{cr}
+func NewCommentUsecase(cr repository.ICommentRepository, cv validator.ICommentValidator) ICommentUsecase {
+	return &CommentUsecase{cr, cv}
 }
 
 func (cu *CommentUsecase) GetCommentsByCompanyId(companyId uint) ([]model.CommentResponse, error) {
@@ -39,6 +41,9 @@ func (cu *CommentUsecase) GetCommentsByCompanyId(companyId uint) ([]model.Commen
 }
 
 func (cu *CommentUsecase) CreateComment(comment model.Comment) (model.CommentResponse, error) {
+	if err := cu.cv.CommentValidate(comment); err != nil {
+		return model.CommentResponse{}, err
+	}
 	if err := cu.cr.CreateComment(&comment); err != nil {
 		return model.CommentResponse{}, err
 	}

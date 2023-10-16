@@ -3,6 +3,7 @@ package usecase
 import (
 	"recruit-info-service/model"
 	"recruit-info-service/repository"
+	"recruit-info-service/validator"
 )
 
 type ITechnologyUsecase interface {
@@ -15,10 +16,11 @@ type ITechnologyUsecase interface {
 
 type TechnologyUsecase struct {
 	tr repository.ITechnologyRepository
+	tv validator.ITechnologyValidator
 }
 
-func NewTechnologyUsecase(tr repository.ITechnologyRepository) ITechnologyUsecase {
-	return &TechnologyUsecase{tr}
+func NewTechnologyUsecase(tr repository.ITechnologyRepository, tv validator.ITechnologyValidator) ITechnologyUsecase {
+	return &TechnologyUsecase{tr, tv}
 }
 
 func (tu *TechnologyUsecase) GetAllTechnologies() ([]model.TechnologyResponse, error) {
@@ -56,6 +58,9 @@ func (tu *TechnologyUsecase) GetTechnologyById(technologyId uint) (model.Technol
 }
 
 func (tu *TechnologyUsecase) CreateTechnology(technology model.Technology) (model.TechnologyResponse, error) {
+	if err := tu.tv.TechnologyValidate(technology); err != nil {
+		return model.TechnologyResponse{}, err
+	}
 	if err := tu.tr.CreateTechnology(&technology); err != nil {
 		return model.TechnologyResponse{}, err
 	}
@@ -70,6 +75,9 @@ func (tu *TechnologyUsecase) CreateTechnology(technology model.Technology) (mode
 }
 
 func (tu *TechnologyUsecase) UpdateTechnology(technology model.Technology, technologyId uint) (model.TechnologyResponse, error) {
+	if err := tu.tv.TechnologyValidate(technology); err != nil {
+		return model.TechnologyResponse{}, err
+	}
 	if err := tu.tr.UpdateTechnology(&technology, technologyId); err != nil {
 		return model.TechnologyResponse{}, err
 	}
