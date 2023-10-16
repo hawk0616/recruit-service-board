@@ -9,13 +9,15 @@ import (
 	"recruit-info-service/validator"
 )
 
-func main() {
+func main() {						
 	// db
 	db := db.NewDB()
 
 	// validator
 	userValidator := validator.NewUserValidator()
 	companyValidator := validator.NewCompanyValidator()
+	commentValidator := validator.NewCommentValidator()
+	technologyValidator := validator.NewTechnologyValidator()
 
 	// repository
 	userRepository := repository.NewUserRepository(db)
@@ -31,8 +33,8 @@ func main() {
 	userUsecase := usecase.NewUserUsecase(userRepository, userValidator)
 	companyUsecase := usecase.NewCompanyUsecase(companyRepository, companyValidator)
 	likeUsecase := usecase.NewLikeUsecase(likeRepository)
-	commentUsecase := usecase.NewCommentUsecase(commentRepository)
-	technologyUsecase := usecase.NewTechnologyUsecase(technologyRepository)
+	commentUsecase := usecase.NewCommentUsecase(commentRepository, commentValidator)
+	technologyUsecase := usecase.NewTechnologyUsecase(technologyRepository, technologyValidator)
 	companyTechnologyUsecase := usecase.NewCompanyTechnologyUsecase(companyTechnologyRepository)
 	technologyTagUsecase := usecase.NewTechnologyTagUsecase(technologyTagRepository)
 	technologyTechnologyTagUsecase := usecase.NewTechnologyTechnologyTagUsecase(technologyTechnologyTagRepository)
