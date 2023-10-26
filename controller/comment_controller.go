@@ -1,7 +1,6 @@
 package controller
 
 import (
-	"fmt"
 	"net/http"
 	"recruit-info-service/model"
 	"recruit-info-service/usecase"
@@ -31,7 +30,6 @@ func (cmc *CommentController) GetCommentsByCompanyId(c echo.Context) error {
 	companyId, _ := strconv.Atoi(temCompanyId)
 
 	comments, err := cmc.cu.GetCommentsByCompanyId(uint(companyId))
-	fmt.Println(comments)
 	if err != nil {
 		return c.JSON(http.StatusInternalServerError, err)
 	}

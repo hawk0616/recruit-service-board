@@ -15,6 +15,8 @@ type ICompanyController interface {
 	CreateCompany(c echo.Context) error
 	UpdateCompany(c echo.Context) error
 	DeleteCompany(c echo.Context) error
+
+	SearchCompanyByName(c echo.Context) error
 }
 
 type companyController struct {
@@ -78,4 +80,13 @@ func (cc *companyController) DeleteCompany(c echo.Context) error {
 		return c.JSON(http.StatusInternalServerError, err.Error())
 	}
 	return c.NoContent(http.StatusOK)
+}
+
+func (cc *companyController) SearchCompanyByName(c echo.Context) error {
+	name := c.QueryParam("name")
+	companiesRes, err := cc.cu.SearchCompanyByName(name)
+	if err != nil {
+		return c.JSON(http.StatusInternalServerError, err.Error())
+	}
+	return c.JSON(http.StatusOK, companiesRes)
 }

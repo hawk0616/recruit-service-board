@@ -10,6 +10,9 @@ env:
   ECR_REGISTRY: ${{ secrets.AWS_ACCOUNT_ID }}.dkr.ecr.ap-northeast-1.amazonaws.com
   ECR_REPOSITORY: recruit-service-board
   APP: recruit-service-board
+  NEXT_ECR_REPOSITORY: next-service-board
+  NEXT_APP: next-service-board
+  NEXT_DOCKERFILE: ./front/front.dockerfile
 
 permissions:
   id-token: write
@@ -60,6 +63,23 @@ jobs:
           rm -rf /tmp/.buildx-cache
           mv /tmp/.buildx-cache-new /tmp/.buildx-cache
 
+        - name: Build and push Next.js
+        uses: docker/build-push-action@v5
+        with:
+          context: .
+          file: ${{ env.NEXT_DOCKERFILE }}
+          push: true
+          tags: |
+            ${{ env.ECR_REGISTRY }}/${{ env.NEXT_ECR_REPOSITORY }}:${{ github.sha }}
+          cache-from: type=local,src=/tmp/.buildx-cache
+          cache-to: type=local,dest=/tmp/.buildx-cache-next,mode=max
+
+      - name: Move Next.js cache
+        run: |
+          rm -rf /tmp/.buildx-cache
+          mv /tmp/.buildx-cache-next /tmp/.buildx-cache
+
+
       - name: Fill in the new image ID in the Amazon ECS task definition
         id: task-def
         uses: aws-actions/amazon-ecs-render-task-definition@v1
@@ -67,6 +87,15 @@ jobs:
           task-definition: ./aws/task-definition.json
           container-name: ${{ env.APP }}
           image: ${{ env.ECR_REGISTRY }}/${{ env.ECR_REPOSITORY }}:${{ github.sha }}
+      
+      - name: Fill in the new image ID in the Next.js Amazon ECS task definition
+        id: task-def-next
+        uses: aws-actions/amazon-ecs-render-task-definition@v1
+        with:
+          task-definition: ./aws/task-definition-next.json
+          container-name: ${{ env.NEXT_APP }}
+          image: ${{ env.ECR_REGISTRY }}/${{ env.NEXT_ECR_REPOSITORY }}:${{ github.sha }}
+
 
       - name: Trigger Lambda through API Gateway
         run: |
@@ -85,5 +114,14 @@ jobs:
           task-definition: ${{ steps.task-def.outputs.task-definition }}
           service: ${{ env.APP }}
           cluster: ${{ env.APP }}
+          wait-for-service-stability: true
+        timeout-minutes: 5
+
+      - name: Deploy Next.js Amazon ECS task definition
+        uses: aws-actions/amazon-ecs-deploy-task-definition@v1
+        with:
+          task-definition: ${{ steps.task-def-next.outputs.task-definition }}
+          service: ${{ env.NEXT_APP }}
+          cluster: ${{ env.NEXT_APP }}
           wait-for-service-stability: true
         timeout-minutes: 5

@@ -1,5 +1,5 @@
 export type Credential = {
-  name: string
+  name: string | null
   email: string
   password: string
 }

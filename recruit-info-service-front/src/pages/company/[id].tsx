@@ -18,6 +18,8 @@ const CompanyDetailPage = () => {
   const { company, loading } = useGetCompanyById();
   const router = useRouter();
 
+  console.log("aa", company)
+
   useEffect(() => {
     if (!loading && !company?.id) {
       router.push('/404');

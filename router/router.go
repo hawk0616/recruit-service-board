@@ -55,6 +55,7 @@ func NewRouter(
 	}))
 	c.GET("", cc.GetAllCompanies)
 	c.GET("/:companyId", cc.GetCompanyById)
+	c.GET("/search", cc.SearchCompanyByName)
 	c.POST("", cc.CreateCompany)
 	c.PUT("/:companyId", cc.UpdateCompany)
 	c.DELETE("/:companyId", cc.DeleteCompany)

@@ -44,6 +44,11 @@ func (m *MockCompanyUsecase) DeleteCompany(companyId uint) error {
 	return args.Error(0)
 }
 
+func (m *MockCompanyUsecase) SearchCompanyByName(companyName string) ([]model.CompanyResponse, error) {
+	args := m.Called(companyName)
+	return args.Get(0).([]model.CompanyResponse), args.Error(1)
+}
+
 func TestGetAllCompanies(t *testing.T) {
 	mockUsecase := &MockCompanyUsecase{}
 	expectCompaniesRes := []model.CompanyResponse{
@@ -217,6 +222,48 @@ func TestDeleteCompany(t *testing.T) {
 	err := controller.DeleteCompany(c)
 	if assert.NoError(t, err) {
 			assert.Equal(t, http.StatusOK, rec.Code)
+	}
+	mockUsecase.AssertExpectations(t)
+}
+
+func TestSearchCompanyByName(t *testing.T) {
+	mockUsecase := &MockCompanyUsecase{}
+	expectCompaniesRes := []model.CompanyResponse{
+			{
+					ID:          1,
+					Name:        "Company A",
+					Description: "Description A",
+					OpenSalary:  "OpenSalary A",
+					Address:     "Address A",
+			},
+			{
+					ID:          2,
+					Name:        "Company B",
+					Description: "Description B",
+					OpenSalary:  "OpenSalary B",
+					Address:     "Address B",
+			},
+	}
+
+	mockUsecase.On("SearchCompanyByName", "Company").Return(expectCompaniesRes, nil)
+
+	e := echo.New()
+	req := httptest.NewRequest(http.MethodGet, "/companies/search?name=Company", nil)
+	rec := httptest.NewRecorder()
+	c := e.NewContext(req, rec)
+	c.SetParamNames("name")
+	c.SetParamValues("Company")
+
+	controller := controller.NewCompanyController(mockUsecase)
+	err := controller.SearchCompanyByName(c)
+	if assert.NoError(t, err) {
+			assert.Equal(t, http.StatusOK, rec.Code)
+
+			var response []model.CompanyResponse
+			err := json.Unmarshal(rec.Body.Bytes(), &response)
+			if assert.NoError(t, err) {
+					assert.Equal(t, expectCompaniesRes, response)
+			}
 	}
 	mockUsecase.AssertExpectations(t)
 }

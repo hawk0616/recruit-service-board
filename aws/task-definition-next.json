@@ -1,15 +1,15 @@
 {
-  "family": "recruit-service-board",
-  "taskRoleArn": "arn:aws:iam::113713103169:role/recruit-service-board-ecs-task",
-  "executionRoleArn": "arn:aws:iam::113713103169:role/recruit-service-board-ecs",
+  "family": "next-app",
+  "taskRoleArn": "arn:aws:iam::113713103169:role/next-ecs-task",
+  "executionRoleArn": "arn:aws:iam::113713103169:role/next-ecs-execution",
   "networkMode": "awsvpc",
   "cpu": "256",
   "memory": "512",
   "requiresCompatibilities": ["FARGATE"],
   "containerDefinitions": [
     {
-      "name": "recruit-service-board",
-      "image": "medpeer/health_check:latest",
+      "name": "${{ env.NEXT_APP }}",
+      "image": "${{ env.ECR_REGISTRY }}/${{ env.NEXT_ECR_REPOSITORY }}:${{ github.sha }}",
       "portMappings": [
         {
           "protocol": "tcp",
@@ -17,19 +17,12 @@
           "containerPort": 8080
         }
       ],
-      "healthCheck": {
-        "command": ["CMD-SHELL", "curl -f http://localhost:8080/health_checks || exit 1"],
-        "interval": 30,
-        "timeout": 5,
-        "retries": 3,
-        "startPeriod": 10
-      },
       "logConfiguration": {
         "logDriver": "awslogs",
         "options": {
           "awslogs-group": "/aws/ecs/recruit-service-board",
           "awslogs-region": "ap-northeast-1",
-          "awslogs-stream-prefix": "app"
+          "awslogs-stream-prefix": "nextjs"
         }
       },
       "environment": [
@@ -38,8 +31,8 @@
           "value": "8080"
         },
         {
-          "name": "HEALTH_CHECK_PATH",
-          "value": "/health_checks"
+          "name": "NEXTJS_ENV_VAR",
+          "value": "Your value here"
         }
       ],
       "essential": true
