@@ -1,0 +1,43 @@
+name: Go Lint and Test
+
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+    branches:
+      - main
+
+jobs:
+  lint-and-test:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout
+      uses: actions/checkout@v3
+
+    - name: Set up Go
+      uses: actions/setup-go@v2
+      with:
+        go-version: 1.x
+
+    - name: Install dependencies
+      run: go mod download
+
+    - name: Run golangci-lint
+      uses: golangci/golangci-lint-action@v3
+      with:
+        version: latest
+      continue-on-error: true
+    
+    - name: Extract affected files
+      run: |
+        cat format.txt | awk -F: '{print $1}' | sort -u > affected_files.txt
+          
+    - name: Print affected files
+      run: |
+        echo "Affected Files:"
+        cat affected_files.txt
+
+    - name: Run Go Test
+      run: go test ./tests/...

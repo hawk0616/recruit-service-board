@@ -1,7 +1,6 @@
 package controller
 
 import (
-	"fmt"
 	"net/http"
 	"os"
 	"recruit-info-service/model"
@@ -28,7 +27,6 @@ func NewUserController(uu usecase.IUserUsecase) IUserController {
 }
 
 func (uc *userController) SignUp(c echo.Context) error {
-	fmt.Println("SignUp")
 	user := model.User{}
 	if err := c.Bind(&user); err != nil {
 		return err

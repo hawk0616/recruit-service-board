@@ -17,6 +17,7 @@ export const useGetCompanyById = () => {
 
       try {
         const response = await axios.get(`${process.env.NEXT_PUBLIC_API_URL}/companies/${query.id}`, { withCredentials: true })
+        console.log("response", response.data)
         setCompany(response.data)
         setLoading(false)
       } catch (err: any) {

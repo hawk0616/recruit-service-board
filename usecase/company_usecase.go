@@ -12,6 +12,8 @@ type ICompanyUsecase interface {
 	CreateCompany(company model.Company) (model.CompanyResponse, error)
 	UpdateCompany(company model.Company, companyId uint) (model.CompanyResponse, error)
 	DeleteCompany(companyId uint) error
+
+	SearchCompanyByName(companyName string) ([]model.CompanyResponse, error)
 }
 
 type CompanyUsecase struct {
@@ -101,4 +103,26 @@ func (company *CompanyUsecase) DeleteCompany(companyId uint) error {
 		return err
 	}
 	return nil
+}
+
+func (cu *CompanyUsecase) SearchCompanyByName(companyName string) ([]model.CompanyResponse, error) {
+	companies := []model.Company{}
+	if err := cu.cr.SearchCompanyByName(&companies, companyName); err != nil {
+		return []model.CompanyResponse{}, err
+	}
+
+	resCompanies := []model.CompanyResponse{}
+	for _, v := range companies {
+		c := model.CompanyResponse{
+			ID: v.ID,
+			Name: v.Name,
+			Description: v.Description,
+			OpenSalary: v.OpenSalary,
+			Address: v.Address,
+			CreatedAt: v.CreatedAt,
+			UpdatedAt: v.UpdatedAt,
+		}
+		resCompanies = append(resCompanies, c)
+	}
+	return resCompanies, nil
 }

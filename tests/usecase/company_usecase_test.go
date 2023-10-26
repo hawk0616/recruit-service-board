@@ -38,6 +38,11 @@ func (m *MockCompanyRepository) DeleteCompany(companyId uint) error {
     return args.Error(0)
 }
 
+func (m *MockCompanyRepository) SearchCompanyByName(companies *[]model.Company, name string) error {
+		args := m.Called(companies, name)
+		return args.Error(0)
+}
+
 type MockCompanyValidator struct {
     mock.Mock
 }
@@ -142,6 +147,30 @@ func TestDeleteCompany(t *testing.T) {
 	err := mockUsecase.DeleteCompany(1)
 	
 	assert.NoError(t, err)
+
+	mockRepo.AssertExpectations(t)
+}
+
+func TestSearchCompanyByName(t *testing.T) {
+	mockRepo := &MockCompanyRepository{}
+	mockValidator := &MockCompanyValidator{}
+	mockUsecase := usecase.NewCompanyUsecase(mockRepo, mockValidator)
+	expectCompanies := []model.Company{
+			{ID: 1, Name: "Company A", Description: "Description A", OpenSalary: "OpenSalary A", Address: "Address A"},
+			{ID: 2, Name: "Company B", Description: "Description B", OpenSalary: "OpenSalary B", Address: "Address B"},
+	}
+
+	mockRepo.On("SearchCompanyByName", mock.AnythingOfType("*[]model.Company"), mock.AnythingOfType("string")).Return(nil).Run(func(args mock.Arguments) {
+			companies := args.Get(0).(*[]model.Company)
+			*companies = expectCompanies
+	})
+
+	companiesRes, err := mockUsecase.SearchCompanyByName("Company")
+	
+	assert.NoError(t, err)
+	assert.Len(t, companiesRes, 2)
+	assert.Equal(t, "Company A", companiesRes[0].Name)
+	assert.Equal(t, "Company B", companiesRes[1].Name)
 
 	mockRepo.AssertExpectations(t)
 }

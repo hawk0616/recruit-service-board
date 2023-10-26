@@ -14,6 +14,16 @@ services:
     volumes:
       - .:/app
 
+  front:
+    container_name: front
+    build:
+      context: ./front
+      dockerfile: front.dockerfile
+    ports:
+      - 3000:3000
+    volumes:
+      - ./front:/app
+
   db:
     container_name: db
     build:

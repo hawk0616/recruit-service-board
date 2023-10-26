@@ -14,6 +14,8 @@ type ICompanyRepository interface {
 	CreateCompany(company *model.Company) error
 	UpdateCompany(company *model.Company, companyId uint) error
 	DeleteCompany( companyId uint) error
+
+	SearchCompanyByName(companies *[]model.Company, name string) error
 }
 
 type CompanyRepository struct {
@@ -73,5 +75,13 @@ func (cr *CompanyRepository) DeleteCompany(companyId uint) error {
 		return fmt.Errorf("record not found")
 	}
 	
+	return nil
+}
+
+func (cr *CompanyRepository) SearchCompanyByName(companies *[]model.Company, name string) error {
+	fmt.Println("name", name)
+	if err := cr.db.Where("name LIKE ?", "%"+name+"%").Find(&companies).Error; err != nil {
+		return err
+	}
 	return nil
 }
