@@ -1,15 +1,11 @@
 package controller_test
 
 import (
-	// "encoding/json"
-	// "io/ioutil"
 	"net/http"
 	"net/http/httptest"
 	"recruit-info-service/controller"
 	"recruit-info-service/model"
 	"strings"
-
-	// "strings"
 	"testing"
 
 	"github.com/golang-jwt/jwt/v4"

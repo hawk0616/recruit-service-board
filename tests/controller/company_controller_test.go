@@ -2,7 +2,7 @@ package controller_test
 
 import (
 	"encoding/json"
-	"io/ioutil"
+	"io"
 	"net/http"
 	"net/http/httptest"
 	"recruit-info-service/controller"
@@ -146,7 +146,7 @@ func TestCreateCompany(t *testing.T) {
 			Address:     "Address A",
 	}
 	companyJson, _ := json.Marshal(company)
-	companyBody := ioutil.NopCloser(strings.NewReader(string(companyJson)))
+	companyBody := io.NopCloser(strings.NewReader(string(companyJson)))
 	c.Request().Body = companyBody
 
 	controller := controller.NewCompanyController(mockUsecase)
@@ -189,7 +189,7 @@ func TestUpdateCompany(t *testing.T) {
 			Address:     "Address A",
 	}
 	companyJson, _ := json.Marshal(company)
-	companyBody := ioutil.NopCloser(strings.NewReader(string(companyJson)))
+	companyBody := io.NopCloser(strings.NewReader(string(companyJson)))
 	c.Request().Body = companyBody
 
 	controller := controller.NewCompanyController(mockUsecase)

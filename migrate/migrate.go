@@ -10,7 +10,7 @@ func main() {
 	dbConn := db.NewDB()
 	defer log.Println("Successfully Migrated")
 	defer db.CloseDB(dbConn)
-	dbConn.AutoMigrate(
+	if err := dbConn.AutoMigrate(
 		&model.User{}, 
 		&model.Company{}, 
 		&model.Technology{}, 
@@ -19,5 +19,7 @@ func main() {
 		&model.TechnologyTechnologyTag{},
 		&model.Like{},
 		&model.Comment{},
-	)
+	); err != nil {
+		log.Fatalf("Failed to migrate: %v", err)
+	}
 }
