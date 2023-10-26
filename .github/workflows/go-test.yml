@@ -30,8 +30,8 @@ jobs:
         version: latest
     
     - name: Extract affected files
-        run: |
-          cat format.txt | awk -F: '{print $1}' | sort -u > affected_files.txt
+      run: |
+        cat format.txt | awk -F: '{print $1}' | sort -u > affected_files.txt
           
     - name: Print affected files
       run: |
