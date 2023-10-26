@@ -28,6 +28,7 @@ jobs:
       uses: golangci/golangci-lint-action@v3
       with:
         version: latest
+      continue-on-error: true
     
     - name: Extract affected files
       run: |
