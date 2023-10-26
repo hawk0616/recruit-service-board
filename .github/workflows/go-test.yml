@@ -28,6 +28,15 @@ jobs:
       uses: golangci/golangci-lint-action@v3
       with:
         version: latest
+    
+    - name: Extract affected files
+        run: |
+          cat format.txt | awk -F: '{print $1}' | sort -u > affected_files.txt
+          
+    - name: Print affected files
+      run: |
+        echo "Affected Files:"
+        cat affected_files.txt
 
     - name: Run Go Test
       run: go test ./tests/...
