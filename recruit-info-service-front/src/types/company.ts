@@ -6,4 +6,4 @@ export type Company = {
   address: string
   created_at: Date
   updated_at: Date
-}SVGAnimatedNuSVGAnimatedNumber
+}

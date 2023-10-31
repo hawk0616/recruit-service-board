@@ -5,7 +5,7 @@ import { useError } from './useError'
 export const useComment = () => {
   const [loading, setLoading] = useState<boolean>(false);
   const [error, setError] = useState(null);
-  const { switchErrorHandling } = useError();
+  const { ErrorHandling } = useError();
   
   const createComment = async (companyId: number, content: string) => {
     setLoading(true);
@@ -18,9 +18,9 @@ export const useComment = () => {
       return response.data;
     } catch (err: any) {
       if (err.response.data.message) {
-        switchErrorHandling(err.response.data.message)
+        ErrorHandling(err.response.data.message)
       } else {
-        switchErrorHandling(err.response.data)
+        ErrorHandling(err.response.data)
       }
       setError(err)
       setLoading(false)
@@ -33,9 +33,9 @@ export const useComment = () => {
       const response = await axios.delete(`${process.env.NEXT_PUBLIC_API_URL}/companies/comments/${companyId}`, { withCredentials: true });
     } catch (err: any) {
       if (err.response.data.message) {
-        switchErrorHandling(err.response.data.message);
+        ErrorHandling(err.response.data.message);
       } else {
-        switchErrorHandling(err.response.data);
+        ErrorHandling(err.response.data);
       }
       setError(err);
     }
@@ -45,22 +45,21 @@ export const useComment = () => {
   const getCommentsByCompanyId = useCallback(async (companyId: number) => {
     setLoading(true);
     try {
-      const response = await axios.get(`${process.env.NEXT_PUBLIC_API_URL}/companies/comments/${companyId}`, { withCredentials: true });
+      const response = await axios.get(`${process.env.NEXT_PUBLIC_API_URL}/companies/comments/${companyId}`, );
       setLoading(false);
-      console.log(response.data);
       return response.data;
     } catch (err: any) {
       if (err.response && err.response.data.message) {
-        switchErrorHandling(err.response.data.message);
+        ErrorHandling(err.response.data.message);
       } else if (err.response && err.response.data) {
-        switchErrorHandling(err.response.data);
+        ErrorHandling(err.response.data);
       } else {
-        switchErrorHandling(err.message);
+        ErrorHandling(err.message);
       }
       setError(err);
       setLoading(false);
     }
-  }, []);
+  }, [ErrorHandling]);
 
   return { 
     createComment,

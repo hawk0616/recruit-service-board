@@ -6,7 +6,7 @@ const LoginForm = ({ switchToSignup }: { switchToSignup: () => void }) => {
   const [email, setEmail] = useState<string>('');
   const [password, setPassword] = useState<string>('');
   const { login } = useAuth();
-  const { switchErrorHandling } = useError();
+  const { ErrorHandling } = useError();
 
   const submitLoginHandler = async (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
@@ -16,7 +16,7 @@ const LoginForm = ({ switchToSignup }: { switchToSignup: () => void }) => {
         name: null
       });
     } catch (err: any) {
-      switchErrorHandling(err.response?.data?.message || err.message || "something went wrong");
+      ErrorHandling(err.response?.data?.message || err.message || "something went wrong");
     }
   };
 

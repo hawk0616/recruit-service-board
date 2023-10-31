@@ -2,10 +2,10 @@ FROM node:16
 
 WORKDIR /app
 
-COPY package.json package-lock.json ./
+COPY ./recruit-info-service-front/package.json ./recruit-info-service-front/package-lock.json ./
 RUN npm install
 
-COPY . .
+COPY ./recruit-info-service-front/ . 
 
 RUN npm run build
 

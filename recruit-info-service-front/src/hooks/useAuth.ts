@@ -7,7 +7,7 @@ import { useError } from './useError'
 
 export const useAuth = () => {
   const router = useRouter()
-  const { switchErrorHandling } = useError()
+  const { ErrorHandling } = useError()
   const [isLoading, setIsLoading] = useState<boolean>(false)
   const [error, setError] = useState(null)
 
@@ -33,9 +33,9 @@ export const useAuth = () => {
       router.push('/company')
     } catch (err: any) {
       if (err.response.data.message) {
-        switchErrorHandling(err.response.data.message)
+        ErrorHandling(err.response.data.message)
       } else {
-        switchErrorHandling(err.response.data)
+        ErrorHandling(err.response.data)
       }
       setError(err)
     } finally {
@@ -51,9 +51,9 @@ export const useAuth = () => {
       router.push('/company')
     } catch (err: any) {
       if (err.response.data.message) {
-        switchErrorHandling(err.response.data.message)
+        ErrorHandling(err.response.data.message)
       } else {
-        switchErrorHandling(err.response.data)
+        ErrorHandling(err.response.data)
       }
       setError(err)
     } finally {
@@ -68,9 +68,9 @@ export const useAuth = () => {
       router.push('/')
     } catch (err: any) {
       if (err.response.data.message) {
-        switchErrorHandling(err.response.data.message)
+        ErrorHandling(err.response.data.message)
       } else {
-        switchErrorHandling(err.response.data)
+        ErrorHandling(err.response.data)
       }
       setError(err)
     } finally {

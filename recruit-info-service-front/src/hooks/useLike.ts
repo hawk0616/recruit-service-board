@@ -1,41 +1,44 @@
 import { useState } from 'react';
 import axios from 'axios';
-import { useError } from './useError'
+import { useError } from './useError';
 
 export const useLike = () => {
   const [loading, setLoading] = useState<boolean>(false);
-  const [error, setError] = useState(null);
-  const { switchErrorHandling } = useError();
-  
+  const [error, setError] = useState<string | null>(null);
+  const { ErrorHandling } = useError();
+
+  const handleAxiosError = (err: any) => {
+    let errorMessage = 'An error occurred.';
+    if (err.response && err.response.data.message) {
+      errorMessage = err.response.data.message;
+    } else if (err.response && err.response.data) {
+      errorMessage = err.response.data;
+    } else if (err.message) {
+      errorMessage = err.message;
+    }
+    ErrorHandling(errorMessage);
+    setError(errorMessage);
+    setLoading(false);
+  }
+
   const createLike = async (companyId: number) => {
     setLoading(true);
     try {
-      const response = await axios.post(`${process.env.NEXT_PUBLIC_API_URL}/companies/likes`, {companyId}, { withCredentials: true })
+      await axios.post(`${process.env.NEXT_PUBLIC_API_URL}/companies/likes`, { companyId }, { withCredentials: true });
       setLoading(false);
     } catch (err: any) {
-      if (err.response.data.message) {
-        switchErrorHandling(err.response.data.message)
-      } else {
-        switchErrorHandling(err.response.data)
-      }
-      setError(err)
-      setLoading(false)
+      handleAxiosError(err);
     }
   };
 
   const deleteLike = async (companyId: number) => {
     setLoading(true);
     try {
-      const response = await axios.delete(`${process.env.NEXT_PUBLIC_API_URL}/companies/likes/${companyId}`, { withCredentials: true });
+      await axios.delete(`${process.env.NEXT_PUBLIC_API_URL}/companies/likes/${companyId}`, { withCredentials: true });
+      setLoading(false);
     } catch (err: any) {
-      if (err.response.data.message) {
-        switchErrorHandling(err.response.data.message);
-      } else {
-        switchErrorHandling(err.response.data);
-      }
-      setError(err);
+      handleAxiosError(err);
     }
-    setLoading(false);
   };
 
   const checkLike = async (companyId: number): Promise<boolean | undefined> => {
@@ -43,20 +46,13 @@ export const useLike = () => {
     try {
       const response = await axios.get(`${process.env.NEXT_PUBLIC_API_URL}/companies/likes/${companyId}`, { withCredentials: true });
       setLoading(false);
-      console.log(response.data.liked)
       return response.data.liked;
     } catch (err: any) {
-      if (err.response.data.message) {
-        switchErrorHandling(err.response.data.message);
-      } else {
-        switchErrorHandling(err.response.data);
-      }
-      setError(err);
-      setLoading(false);
+      handleAxiosError(err);
     }
   };
-  
-  return { 
+
+  return {
     createLike,
     deleteLike,
     checkLike,

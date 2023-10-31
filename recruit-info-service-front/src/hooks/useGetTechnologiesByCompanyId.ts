@@ -8,7 +8,7 @@ const useGetTechnologiesByCompanyId = () => {
   const [companyTechnologies, setCompanyTechnologies] = useState<Technology[]>([]);
   const [loading, setLoading] = useState<boolean>(true);
   const [error, setError] = useState(null);
-  const { switchErrorHandling } = useError();
+  const { ErrorHandling } = useError();
   const { query } = useRouter();
 
   useEffect(() => {
@@ -20,10 +20,12 @@ const useGetTechnologiesByCompanyId = () => {
         setCompanyTechnologies(response.data)
         setLoading(false)
       } catch (err: any) {
-        if (err.response) {
-          switchErrorHandling(err.response)
+        if (err.response && err.response.data) {
+          ErrorHandling(err.response.data)
+        } else if (err.response) {
+          ErrorHandling(err.response)
         } else {
-          switchErrorHandling(err.response.data)
+          ErrorHandling(err)
         }
         setError(err)
         setLoading(false)
@@ -31,7 +33,7 @@ const useGetTechnologiesByCompanyId = () => {
     };
 
     fetchTechnologiesByCompanyId();
-  }, [query.id]);
+  }, [query.id, ErrorHandling]);
 
   return { companyTechnologies, loading, error };
 }

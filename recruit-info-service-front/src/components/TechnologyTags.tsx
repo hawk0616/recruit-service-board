@@ -1,13 +1,11 @@
 import React from 'react';
 import useGetTechnologiesByCompanyId from '@/hooks/useGetTechnologiesByCompanyId';
 import LoadingSpinner from './LoadingSpinner';
-import Error from './Error';
 
 const TechnologyTags = ({  }) => {
-  const { companyTechnologies, loading, error } = useGetTechnologiesByCompanyId();
+  const { companyTechnologies, loading } = useGetTechnologiesByCompanyId();
 
   if (loading) return <LoadingSpinner />;
-  if (error) return <Error message={error} />;
 
   if (!companyTechnologies || companyTechnologies.length === 0) {
     return <p>不明</p>;

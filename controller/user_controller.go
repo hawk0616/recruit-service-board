@@ -1,6 +1,7 @@
 package controller
 
 import (
+	"fmt"
 	"net/http"
 	"os"
 	"recruit-info-service/model"
@@ -32,9 +33,11 @@ func (uc *userController) SignUp(c echo.Context) error {
 		return err
 	}
 	resUser, err := uc.uu.SignUp(user)
+	fmt.Println("test1", err)
 	if err != nil {
 		return c.JSON(http.StatusInternalServerError, err)
 	}
+	fmt.Println(resUser)
 	return c.JSON(http.StatusCreated, resUser)
 }
 

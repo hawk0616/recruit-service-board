@@ -1,41 +1,40 @@
-import axios from 'axios'
-import { useRouter } from 'next/router'
-import { CsrfToken } from '../types/auth'
+import { useState, useEffect } from 'react';
+import axios from 'axios';
+import { useRouter } from 'next/router';
+import { CsrfToken } from '../types/auth';
 
 export const useError = () => {
-  const router = useRouter()
+  const router = useRouter();
+  const [message, setMessage] = useState<string | null>(null);
+
   const getCsrfToken = async () => {
     const { data } = await axios.get<CsrfToken>(
       `${process.env.NEXT_PUBLIC_API_URL}/csrf`
-    )
-    axios.defaults.headers.common['X-CSRF-TOKEN'] = data.csrf_token
-  }
-  const switchErrorHandling = (msg: string) => {
+    );
+    axios.defaults.headers.common['X-CSRF-TOKEN'] = data.csrf_token;
+  };
+
+  useEffect(() => {
+    if (message) {
+      const timer = setTimeout(() => setMessage(null), 5000); // 5秒後にメッセージをクリア
+      return () => clearTimeout(timer);
+    }
+  }, [message]);
+
+  const ErrorHandling = (msg: string) => {
     switch (msg) {
       case 'invalid csrf token':
-        getCsrfToken()
-        alert('CSRF token is invalid, please try again')
-        break
+        getCsrfToken();
+        setMessage('CSRF token is invalid, please try again');
+        break;
       case 'invalid or expired jwt':
-        alert('access token expired, please login')
-        router.push('/')
-        break
-      case 'missing or malformed jwt':
-        alert('access token is not valid, please login')
-        router.push('/')
-        break
-      case 'duplicated key not allowed':
-        alert('email already exist, please use another one')
-        break
-      case 'crypto/bcrypt: hashedPassword is not the hash of the given password':
-        alert('password is not correct')
-        break
-      case 'record not found':
-        alert('email is not correct')
-        break
+        setMessage('access token expired, please login');
+        router.push('/');
+        break;
       default:
-        alert(msg)
+        setMessage(msg);
     }
-  }
-  return { switchErrorHandling }
-}
+  };
+
+  return { ErrorHandling, flashMessage: message };
+};

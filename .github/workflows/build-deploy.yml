@@ -1,4 +1,4 @@
-name: "Go Build and Deploy"
+name: "APP Build and Deploy"
 
 on:
   push:
@@ -12,7 +12,7 @@ env:
   APP: recruit-service-board
   NEXT_ECR_REPOSITORY: next-service-board
   NEXT_APP: next-service-board
-  NEXT_DOCKERFILE: ./front/front.dockerfile
+  NEXT_DOCKERFILE: ./front.dockerfile
 
 permissions:
   id-token: write
@@ -51,7 +51,8 @@ jobs:
         uses: docker/build-push-action@v5
         with:
           context: .
-          file: ./app.dockerfile
+          file: ./app.doc
+          kerfile
           push: true
           tags: |
             ${{ env.ECR_REGISTRY }}/${{ env.ECR_REPOSITORY }}:${{ github.sha }}

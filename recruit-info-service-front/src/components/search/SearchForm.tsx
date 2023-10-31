@@ -11,7 +11,7 @@ const SearchForm = ({ onSearch }: { onSearch: (query: string) => void }) => {
         setSearchQuery(e.target.value);
         onSearch(e.target.value);
       }}
-      className="p-2 border rounded w-2/3"
+      className="p-4 border rounded-lg w-3/4"
       placeholder="企業名で検索"
     />
   );

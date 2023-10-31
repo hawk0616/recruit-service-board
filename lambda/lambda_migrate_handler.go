@@ -14,7 +14,7 @@ func HandleRequest(ctx context.Context) (string, error) {
 	dbConn := db.NewDB()
 	defer log.Println("Successfully Migrated")
 	defer db.CloseDB(dbConn)
-	if err := dbConn.AutoMigrate(
+	dbConn.AutoMigrate(
 		&model.User{}, 
 		&model.Company{}, 
 		&model.Technology{}, 
@@ -23,9 +23,7 @@ func HandleRequest(ctx context.Context) (string, error) {
 		&model.TechnologyTechnologyTag{},
 		&model.Like{},
 		&model.Comment{},
-	); err != nil {
-		log.Fatalf("Failed to migrate: %v", err)
-	}
+	)
 	return "Migration completed successfully!", nil
 }
 

@@ -17,7 +17,7 @@ services:
   front:
     container_name: front
     build:
-      context: ./front
+      context: ./
       dockerfile: front.dockerfile
     ports:
       - 3000:3000

@@ -6,6 +6,7 @@ import SearchForm from '@/components/search/SearchForm';
 import SearchButton from '@/components/search/SearchButton';
 import { useState } from 'react';
 import useSearchCompany from '@/hooks/useSearchCompany';
+import LogoutButton from '@/components/user/LogoutButton';
 
 const CompanyPage = () => {
   const { companies, loading } = useGetCompanies();
@@ -27,8 +28,9 @@ const CompanyPage = () => {
 
   return (
     <div className="bg-gray-200 p-6 rounded-lg shadow-md">
+      <div className="absolute top-4 right-4"><LogoutButton /></div>
       <h1 className="text-black text-5xl font-bold tracking-wide mb-12">企業一覧</h1>
-      <div className="mb-6">
+      <div className="mb-36">
         <SearchForm onSearch={(query) => setSearchQuery(query)} />
         <SearchButton onClick={handleSearch} />
       </div>

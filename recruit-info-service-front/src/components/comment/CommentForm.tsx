@@ -2,9 +2,9 @@ import { useComment } from '../../hooks/useComment';
 import { useState } from 'react'
 
 export const CommentForm = ({ companyId }: { companyId: number }) => {
-  const { createComment, loading, error } = useComment();
-  const [content, setContent] = useState('');
-  const [showForm, setShowForm] = useState(false);
+  const { createComment, loading } = useComment();
+  const [content, setContent] = useState<string>('');
+  const [showForm, setShowForm] = useState<boolean>(false);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();

@@ -3,6 +3,7 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faHeart } from "@fortawesome/free-solid-svg-icons";
 import { useLike } from '@/hooks/useLike';
 import LoadingSpinner from './LoadingSpinner';
+import { useError } from '@/hooks/useError';
 
 type LikeButtonProps = {
   companyId?: number;
@@ -11,7 +12,8 @@ type LikeButtonProps = {
 
 const LikeButton: React.FC<LikeButtonProps> = ({ companyId, className }) => {
   const [liked, setLiked] = useState<boolean | undefined>(false);
-  const { createLike, deleteLike, checkLike, loading, error } = useLike();
+  const { createLike, deleteLike, checkLike, loading } = useLike();
+  const { ErrorHandling } = useError();
 
   useEffect(() => {
     const fetchLikeStatus = async () => {
@@ -22,6 +24,7 @@ const LikeButton: React.FC<LikeButtonProps> = ({ companyId, className }) => {
     };
 
     fetchLikeStatus();
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [companyId]);
 
   const toggleLike = async () => {
@@ -34,8 +37,8 @@ const LikeButton: React.FC<LikeButtonProps> = ({ companyId, className }) => {
         await createLike(companyId);
       }
       setLiked(!liked);
-    } catch (err) {
-      switchErrorHandling(err);
+    } catch (err: any) {
+      ErrorHandling(err.message);
     }
   };
 
@@ -59,7 +62,5 @@ const LikeButton: React.FC<LikeButtonProps> = ({ companyId, className }) => {
 };
 
 export default LikeButton;
-function switchErrorHandling(err: unknown) {
-  throw new Error('Function not implemented.');
-}
+
 

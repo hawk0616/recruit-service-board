@@ -8,7 +8,7 @@ export const useGetCompanyById = () => {
   const [company, setCompany] = useState<Company>();
   const [loading, setLoading] = useState<boolean>(true);
   const [error, setError] = useState(null);
-  const { switchErrorHandling } = useError();
+  const { ErrorHandling } = useError();
   const { query } = useRouter();
 
   useEffect(() => {
@@ -17,14 +17,15 @@ export const useGetCompanyById = () => {
 
       try {
         const response = await axios.get(`${process.env.NEXT_PUBLIC_API_URL}/companies/${query.id}`, { withCredentials: true })
-        console.log("response", response.data)
         setCompany(response.data)
         setLoading(false)
       } catch (err: any) {
-        if (err.response) {
-          switchErrorHandling(err.response)
+        if (err.response && err.response.data && err.response.data.message) {
+          ErrorHandling(err.response.data.message);
+        } else if (err.response && err.response.data) {
+          ErrorHandling(err.response.data);
         } else {
-          switchErrorHandling(err.response.data)
+          ErrorHandling(err.message || "An unexpected error occurred.");
         }
         setError(err)
         setLoading(false)
@@ -32,7 +33,7 @@ export const useGetCompanyById = () => {
     };
 
     fetchCompanyById();
-  }, [query.id]);
+  }, [query.id, ErrorHandling]);
 
   return { company, loading, error };
 };

@@ -7,7 +7,7 @@ const SignupForm = ({ switchToLogin }: { switchToLogin: () => void }) => {
   const [email, setEmail] = useState<string>('');
   const [password, setPassword] = useState<string>('');
   const { signup, login } = useAuth();
-  const { switchErrorHandling } = useError();
+  const { ErrorHandling } = useError();
 
   const submitSignupHandler = async (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
@@ -15,7 +15,7 @@ const SignupForm = ({ switchToLogin }: { switchToLogin: () => void }) => {
       await signup({ name, email, password });
       await login({ name, email, password });
     } catch (err: any) {
-      switchErrorHandling(err.response?.data?.message || err.message || "something went wrong");
+      ErrorHandling(err.response?.data?.message || err.message || "something went wrong");
     }
   };
 

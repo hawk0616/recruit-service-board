@@ -8,7 +8,7 @@ const useSearchCompany = (name: string) => {
   const [loading, setLoading] = useState<boolean>(true);
   const [error, setError] = useState<string | null>(null);
   const [shouldSearch, setShouldSearch] = useState<boolean>(false);
-  const { switchErrorHandling } = useError();
+  const { ErrorHandling } = useError();
 
   useEffect(() => {
     if (!shouldSearch){
@@ -18,15 +18,14 @@ const useSearchCompany = (name: string) => {
 
     const fetchData = async () => {
       try {
-        console.log("name", name)
         const response = await axios.get(`${process.env.NEXT_PUBLIC_API_URL}/companies/search?name=${name}`, { withCredentials: true });
         setCompanies(response.data);
         setLoading(false);
       } catch (err: any) {
         if (err.response.data.message) {
-          switchErrorHandling(err.response.data.message)
+          ErrorHandling(err.response.data.message)
         } else {
-          switchErrorHandling(err.response.data)
+          ErrorHandling(err.response.data)
         }
         setError(err)
         setLoading(false)
@@ -35,7 +34,7 @@ const useSearchCompany = (name: string) => {
 
     fetchData();
     setShouldSearch(false);
-  }, [name, shouldSearch]);
+  }, [name, shouldSearch, ErrorHandling]);
 
   return { companies, loading, error, setShouldSearch };
 };
